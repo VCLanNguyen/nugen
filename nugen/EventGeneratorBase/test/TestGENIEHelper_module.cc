@@ -86,8 +86,7 @@ namespace evgen {
 
   //___________________________________________________________________________
   TestGENIEHelper::TestGENIEHelper(fhicl::ParameterSet const& pset)
-    : EDProducer{pset}
-    , fGENIEHelp       (0)
+    : fGENIEHelp       (0)
       //, fPassEmptySpills (pset.get< bool >("PassEmptySpills"))
       //, fSpillCounter    (0)
       //, fPOTPerSpill     (pset.get< double >("POTPerSpill",    5.0e13))

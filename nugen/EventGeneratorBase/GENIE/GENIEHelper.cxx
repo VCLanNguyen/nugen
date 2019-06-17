@@ -91,11 +91,10 @@
 
 #else
   // GENIE R-3 reorganized headers
-  #include "GENIE/Framework/Messenger/Messenger.h"
+  //#include "GENIE/Framework/Messenger/Messenger.h"
   #include "GENIE/Framework/Conventions/GVersion.h"
   #include "GENIE/Framework/Utils/StringUtils.h"
   #include "GENIE/Framework/Utils/XmlParserUtils.h"
-  #include "GENIE/Framework/Messenger/Messenger.h"
 
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wunused-variable"
@@ -202,7 +201,7 @@
 // accessible during the macro expansion.  This is a bug in GENIE, but
 // for now, the easiest way to do this is to bring genie::Messenger
 // into the global namespace by a using declaration.
-using genie::Messenger;
+//using genie::Messenger;
 
 namespace evgb {
 
