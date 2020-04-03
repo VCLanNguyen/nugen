@@ -21,13 +21,12 @@ art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         ${GENIE_LIB_LIST}
                         ${DK2NU_TREE}
                         ${DK2NU_GENIE}
-                        ${CLHEP}
+                        ${CLHEP_LIBRARIES}
                         ${IFDH}
-                        ${ROOT_GEOM}
-                        ${ROOT_GEOMPAINTER}
-                        ${ROOT_BASIC_LIB_LIST} )
+                        ROOT::Geom
+                        ROOT::GeomPainter
+                        ${ROOT_LIBRARIES} )
 
 
 install_headers()
 install_fhicl()
-install_source()

@@ -21,13 +21,12 @@ set( NURW_LIBS ${ART_FRAMEWORK_SERVICES_REGISTRY}
                ${PYTHIA6}
                ${LHAPDF}
                ${GENIE_LIB_LIST}
-               ${ROOT_BASIC_LIB_LIST}
-               ${ROOT_EG}
-               ${ROOT_TREEPLAYER}
-               ${ROOT_FFTW}
-               ${ROOT_REFLEX}
-               ${ROOTSYS}/lib/libEGPythia6.so
-               ${ROOT_GUI}
+               ${ROOT_LIBRARIES}
+               ROOT::EG
+               ROOT::TreePlayer
+               ROOT::FFTW
+               ROOT::EGPythia6
+               ROOT::Gui
            )
 
 art_make_library( SOURCE NuReweight.cxx
@@ -42,4 +41,3 @@ simple_plugin( ReweightAna module nugen_NuReweight_art
 
 install_headers()
 install_fhicl()
-install_source()
