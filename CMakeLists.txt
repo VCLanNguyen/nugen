@@ -222,7 +222,13 @@ else()
   cet_find_library( GRWCLC       NAMES GRwClc       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
 
   # GENIE pre-R-3 used GSL via ROOT's Math libs, now makes direct call not available via that route
-  cet_find_library( GSL NAMES gsl PATHS ENV GSL_LIB NO_DEFAULT_PATH )
+  find_ups_product(gsl)
+  find_package(BLAS)
+  if (BLAS_FOUND)
+    set(BLAS ${BLAS_LIBRARIES})
+  else()
+    set(BLAS GSL::gslcblas)
+  endif()
 
 # this is the order that GENIE "recommends"
 # genie-config --libs
@@ -283,6 +289,9 @@ else()
                       ${GRWFWK}
                       ${GRWIO}
                       ${GRWCLC}
+                      ${BLAS}
+                      ${ROOT_EGPYTHIA6}
+                      ${ROOT_EVE_LIB_LIST}
                       )
 
 endif()
