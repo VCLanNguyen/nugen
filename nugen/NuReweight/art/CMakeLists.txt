@@ -26,7 +26,7 @@ set( NURW_LIBS ${ART_FRAMEWORK_SERVICES_REGISTRY}
                ${ROOT_TREEPLAYER}
                ${ROOT_FFTW}
                ${ROOT_REFLEX}
-               ${ROOTSYS}/lib/libEGPythia6.so
+               ${ROOT_EGPYTHIA6}
                ${ROOT_GUI}
            )
 
