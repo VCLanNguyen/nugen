@@ -1,0 +1,28 @@
+Files in this directory:
+
+  AddGenieEventsToArt_module.cc - a module that allows one to import GENIE
+      events in its native file format (gntp*.ghep.root) into art records
+      with possible pile up, time offsets, and vertex smearing, and other
+      features
+  AddGenieEventsToArt.fcl - defines base FHiCL values
+  addgeniejob.fcl - an actual example art job fcl to exercise the module
+
+  GenieOutput_module.cc - a module that can extract MCTruth objects (and
+      associated friends like MCFlux) and write them out as standard GENIE
+      native event format (gntp*.ghep.root).  This module can also print
+      those events in GENIE native format which is well structured.
+  GenieOutput.fcl - defines base FHiCL values
+  dump_genie_job.fcl - an actual example art job fcl to exercise the module
+
+  TestGENIEHelper_module.cc - an experiment independent means of running
+      GENIEHelper to generate interactions, but without ties to various
+      experiment level data products for POT accounting.
+  TestGENIEHelper.fcl - defines base FHiCL values
+  runGENIEHelperTest.fcl - an actual example art job fcl to exercise the module
+
+
+Potential CI test of GENIEHelper:
+
+art -c runGENIEHelperTest.fcl -n 10
+
+this is experiment independent but does rely on access to CVMFS for flux files.
