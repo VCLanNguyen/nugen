@@ -23,6 +23,8 @@ Files in this directory:
 
 Potential CI test of GENIEHelper:
 
+# need some version of the splines
+setup genie_xsec v3_00_04a -q G1802a00000:e1000:k250
 art -c runGENIEHelperTest.fcl -n 10
 
 this is experiment independent but does rely on access to CVMFS for flux files.
