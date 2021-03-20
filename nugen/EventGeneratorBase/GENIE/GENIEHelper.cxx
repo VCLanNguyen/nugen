@@ -594,8 +594,22 @@ namespace evgb {
   //--------------------------------------------------
   void GENIEHelper::Initialize()
   {
-    // get this out of the way
-    genie::PDGLibrary::Instance();
+#ifdef GENIE_PRE_R3
+  // trigger early initialization of PDG database & GENIE message service
+  // just to get it out of the way and not intermixed with other output
+  genie::PDGLibrary::Instance();
+#else
+  // get the GENIE banner out of the way
+  // no longer can use genie::PDGLibrary::Instance() to do this
+  // because that must happen, in some cases in v3_02_xx, after the tune
+  // is determined
+  // banner is triggered by first use of GENIE Messenger
+  // avoid using GENIE macros (possible conflict with mf macros)
+  // LOG("GENIE",pInfo) << "Trigger GENIE banner";
+  (*genie::Messenger::Instance())("GENIE") << log4cpp::Priority::INFO
+                                           << "Trigger GENIE banner";
+#endif
+
 
     mf::LogInfo("GENIEHelper") << "GENIE EventGeneratorList using \""
                                << fEventGeneratorList << "\"";

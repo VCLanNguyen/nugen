@@ -27,7 +27,7 @@
   #include "GHEP/GHepRecord.h"
 #else
   #include "GENIE/Framework/Messenger/Messenger.h"
-  #include "GENIE/Framework/ParticleData/PDGLibrary.h"
+  // careful: potential conflict LOG_INFO w/ messagefacility
   #include "GENIE/Framework/GHEP/GHepRecord.h"
   #include "GENIE/Framework/Ntuple/NtpMCFormat.h"
   #include "GENIE/Framework/Ntuple/NtpWriter.h"
@@ -172,8 +172,22 @@ evg::GenieOutput::GenieOutput(const Parameters& params)
   , fSeparateOutputNtpWriters(false)
   , fSeparateDumpStreams(false)
 {
-  // trigger early initialization of PDG database & message service
+#ifdef GENIE_PRE_R3
+  // trigger early initialization of PDG database & GENIE message service
+  // just to get it out of the way and not intermixed with other output
   genie::PDGLibrary::Instance();
+#else
+  // get the GENIE banner out of the way
+  // no longer can use genie::PDGLibrary::Instance() to do this
+  // because that must happen, in some cases in v3_02_xx, after the tune
+  // is determined
+  // banner is triggered by first use of GENIE Messenger
+  // avoid using GENIE macros (possible conflict with mf macros)
+  // LOG("GENIE",pInfo) << "Trigger GENIE banner";
+  (*genie::Messenger::Instance())("GENIE") << log4cpp::Priority::INFO
+                                           << "Trigger GENIE banner";
+#endif
+
 
   fInputModuleLabels     = fParams().inputModuleLabels();
   fOutputGHEPFilePattern = fParams().outputGHEPFilePattern();
