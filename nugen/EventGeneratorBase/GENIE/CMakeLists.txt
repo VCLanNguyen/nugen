@@ -25,6 +25,7 @@ art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         ${IFDH}
                         ${ROOT_GEOM}
                         ${ROOT_GEOMPAINTER}
+                        ${ROOT_MATHMORE}
                         ${ROOT_BASIC_LIB_LIST} )
 
 
