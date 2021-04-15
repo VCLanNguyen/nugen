@@ -1915,8 +1915,13 @@ namespace evgb {
     if     (procInfo.IsQuasiElastic()       ) mode = simb::kQE;
     else if(procInfo.IsDeepInelastic()      ) mode = simb::kDIS;
     else if(procInfo.IsResonant()           ) mode = simb::kRes;
-    else if(procInfo.IsCoherent()           ) mode = simb::kCoh;
-    else if(procInfo.IsCoherentElas()       ) mode = simb::kCohElastic;
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  else if (procInfo.IsCoherentProduction() ) mode = simb::kCoh;
+  else if (procInfo.IsCoherentElastic()    ) mode = simb::kCohElastic;
+#else
+  else if (procInfo.IsCoherent()           ) mode = simb::kCoh;
+  else if (procInfo.IsCoherentElas()       ) mode = simb::kCohElastic;
+#endif
     else if(procInfo.IsElectronScattering() ) mode = simb::kElectronScattering;
     else if(procInfo.IsNuElectronElastic()  ) mode = simb::kNuElectronElastic;
     else if(procInfo.IsInverseMuDecay()     ) mode = simb::kInverseMuDecay;
@@ -1978,7 +1983,11 @@ namespace evgb {
     double x, W2, W;
     x = W2 = W = -1;
 
-    if ( hitnucl || procInfo.IsCoherent() ) {
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  if ( hitnucl || procInfo.IsCoherentProduction() ) {
+#else
+  if ( hitnucl || procInfo.IsCoherent() ) {
+#endif
       const double M  = genie::constants::kNucleonMass;
       // Bjorken x.
       // Rein & Sehgal use this same formulation of x even for Coherent
