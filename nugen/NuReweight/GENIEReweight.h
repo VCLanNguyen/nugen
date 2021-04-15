@@ -93,8 +93,6 @@ namespace rwgt{
 
     double CalculateWeight(const genie::EventRecord& evr) const;
 
-    //genie::EventRecord RetrieveGHEP(simb::MCTruth truth, simb::GTruth gtruth);
-
     //Functions to configure individual weight calculators
     void ConfigureNCEL();
     void ConfigureQEMA();
