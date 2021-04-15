@@ -16,6 +16,7 @@ set( NURW_LIBS ${ART_FRAMEWORK_SERVICES_REGISTRY}
                ${FHICLCPP}
                cetlib
                cetlib_except
+               nugen_EventGeneratorBase_GENIE
                ${LOG4CPP}
                ${XML2}
                ${PYTHIA6}
