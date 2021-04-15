@@ -13,9 +13,6 @@
 
 
 // GENIE
-//#include "EVGDrivers/GFluxI.h"         # R-3 "Framework/EventGen/GFluxI.h"
-//#include "EVGDrivers/GeomAnalyzerI.h"  # R-3 "Framework/EventGen/GeomAnalyzerI.h"
-//#include "EVGDrivers/GMCJDriver.h"     # R-3 "Framework/EventGen/GMCJDriver.h"
 namespace genie {
   class GFluxI;
   class GeomAnalyzerI;
@@ -111,11 +108,6 @@ namespace evgb {
     void InitializeFluxDriver();
     void ConfigGeomScan();
     void SetMaxPathOutInfo();
-
-    void PackNuMIFlux(simb::MCFlux &flux);
-    void PackSimpleFlux(simb::MCFlux &flux);
-    void PackMCTruth(genie::EventRecord *record, simb::MCTruth &truth);
-    void PackGTruth(genie::EventRecord *record, simb::GTruth &truth);
 
     void BuildFluxRotation();
     void ExpandFluxPaths();
