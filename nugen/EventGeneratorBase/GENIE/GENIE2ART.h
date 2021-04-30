@@ -57,12 +57,14 @@ namespace evgb {
                    double spillTime,
                    simb::MCTruth& mctruth,
                    const std::string & genieVersion="unknown",
-                   const std::string & genieTune="unknown");
+                   const std::string & genieTune="unknown",
+                   bool addGenieVtxTime = false);
   void FillMCTruth(const genie::EventRecord* grec,
                    TLorentzVector& vtxOffset,
                    simb::MCTruth& mctruth,
                    const std::string & genieVersion="unknown",
-                   const std::string & genieTune="unknown");
+                   const std::string & genieTune="unknown",
+                   bool addGenieVtxTime = false);
   void FillGTruth(const genie::EventRecord* grec,
                   simb::GTruth& gtruth);
 
