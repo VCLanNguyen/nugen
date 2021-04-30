@@ -400,18 +400,30 @@ void evgb::FillGTruth(const genie::EventRecord* record,
   truth.fCharmHadronPdg   = exclTag.CharmHadronPdg();
   truth.fIsStrange        = exclTag.IsStrangeEvent();
   truth.fStrangeHadronPdg = exclTag.StrangeHadronPdg();
-  truth.fResNum    = (int)exclTag.Resonance();
-  truth.fDecayMode = exclTag.DecayMode();
+  truth.fResNum           = (int)exclTag.Resonance();
+  truth.fDecayMode        = exclTag.DecayMode();
 
-  //note that in principle this information could come from the XclsTag,
-  //but that object isn't completely filled for most reactions,
-  //at least for GENIE <= 2.12
-//    truth.fNumPiPlus = exclTag.NPiPlus();
-//    truth.fNumPiMinus = exclTag.NPiMinus();
-//    truth.fNumPi0 = exclTag.NPi0();
-//    truth.fNumProton = exclTag.NProtons();
-//    truth.fNumNeutron = exclTag.NNucleons();
-  truth.fNumPiPlus = truth.fNumPiMinus = truth.fNumPi0 = truth.fNumProton = truth.fNumNeutron = 0;
+  truth.fNumPiPlus = truth.fNumPiMinus = truth.fNumPi0 = 0;
+  truth.fNumProton = truth.fNumNeutron = 0;
+  truth.fNumSingleGammas = 0;
+  truth.fNumRho0 = truth.fNumRhoPlus = truth.fNumRhoMinus = 0;
+
+  //#define FILL_XCLS_OURSELVES
+#ifndef FILL_XCLS_OURSELVES
+  truth.fNumProton       = exclTag.NProtons();
+  truth.fNumNeutron      = exclTag.NNeutrons();
+  truth.fNumPi0          = exclTag.NPi0();
+  truth.fNumPiPlus       = exclTag.NPiPlus();
+  truth.fNumPiMinus      = exclTag.NPiMinus();
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  truth.fNumSingleGammas = exclTag.NSingleGammas();
+  truth.fNumRho0         = exclTag.NRho0();
+  truth.fNumRhoPlus      = exclTag.NRhoPlus();
+  truth.fNumRhoMinus     = exclTag.NRhoMinus();
+#endif
+#else
+  // try to fill the counts ourselves ...
+  // most events don't have any of these set
   for (int idx = 0; idx < record->GetEntries(); idx++)
   {
     // want hadrons that are about to be sent to the FSI model
@@ -420,7 +432,19 @@ void evgb::FillGTruth(const genie::EventRecord* record,
       continue;
 
     int pdg = particle->Pdg();
-    if (pdg == genie::kPdgPi0)
+    switch ( pdg ) {
+    case genie::kPdgPi0:     truth.fNumPi0++;          break;
+    case genie::kPdgPiP:     truth.fNumPiPlus++;       break;
+    case genie::kPdgPiM:     truth.fNumPiMinus++;      break;
+    case genie::kPdgNeutron: truth.fNumNeutron++;      break;
+    case genie::kPdgProton:  truth.fNumProton++;       break;
+    case genie::kPdgGamma:   truth.fNumSingleGammas++; break;
+    case genie::kPdgRho0:    truth.fNumRho0++;         break;
+    case genie::kPdgRhoP:    truth.fNumRhoPlus++;      break;
+    case genie::kPdgRhoM:    truth.fNumRhoMinus++;     break;
+    }
+    /*
+    if      (pdg == genie::kPdgPi0)
       truth.fNumPi0++;
     else if (pdg == genie::kPdgPiP)
       truth.fNumPiPlus++;
@@ -430,7 +454,23 @@ void evgb::FillGTruth(const genie::EventRecord* record,
       truth.fNumNeutron++;
     else if (pdg == genie::kPdgProton)
       truth.fNumProton++;
+    else if (pdg == genie::kPdgGamma)
+      truth.fNumSingleGammas++;
+    else if (pdg == genie::kPdgRho0)
+      truth.fNumRho0++;
+    else if (pdg == genie::kPdgRhoP)
+      truth.fNumRhoPlus++;
+    else if (pdg == genie::kPdgRhoM)
+      truth.fNumRhoMinus++;
+    */
+
   } // for (idx)
+#endif
+
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  truth.fFinalQuarkPdg  = exclTag.FinalQuarkPdg();
+  truth.fFinalLeptonPdg = exclTag.FinalLeptonPdg();
+#endif
 
   // Get the GENIE kinematics info
   const genie::Kinematics &kine = inter->Kine();
@@ -577,6 +617,14 @@ genie::EventRecord* evgb::RetrieveGHEP(const simb::MCTruth& mctruth,
   gxt.SetDecayMode(gtruth.fDecayMode);
   gxt.SetNPions(gtruth.fNumPiPlus, gtruth.fNumPi0, gtruth.fNumPiMinus);
   gxt.SetNNucleons(gtruth.fNumProton, gtruth.fNumNeutron);
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  gxt.SetNSingleGammas(gtruth.fNumSingleGammas);
+  gxt.SetNRhos(gtruth.fNumRhoPlus, gtruth.fNumRho0, gtruth.fNumRhoMinus);
+  if ( gtruth.fFinalQuarkPdg  != 0 )
+    gxt.SetFinalQuark(gtruth.fFinalQuarkPdg);
+  if ( gtruth.fFinalLeptonPdg != 0 )
+    gxt.SetFinalLepton(gtruth.fFinalLeptonPdg);
+#endif
 
   if (gtruth.fIsCharm) {
     gxt.SetCharm(gtruth.fCharmHadronPdg);
