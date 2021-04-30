@@ -34,8 +34,8 @@ find_ups_product( art )
 find_ups_product(art_root_io)
 find_ups_product(canvas_root_io)
 find_ups_product( genie )
-find_ups_product( dk2nudata )
 find_ups_product( dk2nugenie )
+find_ups_product( dk2nudata )
 find_ups_product( libwda )
 find_ups_product( postgresql )
 find_ups_product( nusimdata )
@@ -100,6 +100,30 @@ cet_find_library( XML2 NAMES xml2 PATHS $ENV{LIBXML2_FQ_DIR}/lib NO_DEFAULT_PATH
   cet_find_library( GTLGEO       NAMES GTlGeo       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
   cet_find_library( GTLFLX       NAMES GTlFlx       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
 
+#parse_ups_version( ${GENIE_VERSION} )
+#MESSAGE("--NUGEN-- GENIE_VERSION=${GENIE_VERSION} parse to ${VMAJ} ${VMIN}")
+
+# don't rely on UPS naming
+execute_process(COMMAND genie-config --version OUTPUT_VARIABLE GCV)
+# result has an annoying \n
+string(STRIP "${GCV}" GENIE_CONFIG_VERSION)
+# assume form MAJOR.MINOR.TINY
+string(FIND ${GENIE_CONFIG_VERSION} "." GCVFIRST)
+string(FIND ${GENIE_CONFIG_VERSION} "." GCVLAST REVERSE)
+# don't want to include "." for start
+math(EXPR GCVMINORS ${GCVFIRST}+1)
+math(EXPR GCVMINORL ${GCVLAST}-${GCVFIRST}-1)
+
+string(SUBSTRING "${GENIE_CONFIG_VERSION}" 0 ${GCVFIRST} VMAJ)
+string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
+#MESSAGE("--NUGEN-- GCV=${GCV} GENIE_CONFIG_VERSION=${GENIE_CONFIG_VERSION} parse to VMAJ ${VMAJ} VMIN ${VMIN} from ${GCVFIRST} ${GCVLAST} start ${GCVMINORS} len ${GCVMINORL}")
+
+  # v3_02_xx adds new required library
+  # as v2 is no longer supported, then only v3_00_xx doesn't need this
+if ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
+  cet_find_library( GPHHADTENS   NAMES GPhHadTens   PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
+endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
+
   # if GENIE's Reweight gets spun into separate product
   # then the following must change for GENIE_LIB to ? GENIERW_LIB
   cet_find_library( GRWFWK       NAMES GRwFwk       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
@@ -157,6 +181,7 @@ cet_find_library( XML2 NAMES xml2 PATHS $ENV{LIBXML2_FQ_DIR}/lib NO_DEFAULT_PATH
                       ${GPHGLWRESEG}
                       ${GPHIBDXS}
                       ${GPHIBDEG}
+                      ${GPHHADTENS}  ## new for v3_02_xx
                       ${GPHMNUCXS}
                       ${GPHMNUCEG}
                       ${GPHMEL}
