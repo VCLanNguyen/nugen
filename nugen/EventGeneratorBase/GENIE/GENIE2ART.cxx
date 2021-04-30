@@ -182,18 +182,21 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                        double spillTime,
                        simb::MCTruth &truth,
                        const std::string & genieVersion,
-                       const std::string & genieTune)
+                       const std::string & genieTune,
+                       bool addGenieVtxTime)
 {
   TLorentzVector vtxOffset(0,0,0,spillTime);
-  FillMCTruth(record,vtxOffset,truth,genieVersion,genieTune);
+  FillMCTruth(record,vtxOffset,truth,genieVersion,genieTune,addGenieVtxTime);
 }
 
 void evgb::FillMCTruth(const genie::EventRecord *record,
                        TLorentzVector &vtxOffset,
                        simb::MCTruth  &truth,
                        const std::string & genieVersion,
-                       const std::string & genieTune)
+                       const std::string & genieTune,
+                       bool addGenieVtxTime)
 {
+  // offset vector is assmed to be in (cm,ns) which is MCTruth's units
   TLorentzVector *vertex = record->Vertex();
 
   // get the Interaction object from the record - this is the object
@@ -211,9 +214,14 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
   // add the particles from the interaction
   TIter partitr(record);
   genie::GHepParticle *part = 0;
-  // GHepParticles return units of GeV/c for p.  the V_i are all in fermis
-  // and are relative to the center of the struck nucleus.
-  // add the vertex X/Y/Z to the V_i for status codes 0 and 1
+  // GHepParticles return units of GeV/c for p.
+  // The V_i are all in fermis and are relative to the center
+  // of the struck nucleus.
+  // prior to GENIE R-3_02_00 time was always zero
+  // thereafter that it is given in units of yoctoseconds (10^{-24})
+  // add the lab vertex X/Y/Z to the V_i for everything
+  // (store the true fermi distance in GVtx to be retrievable)
+
   int trackid = 0;
   std::string primary("primary");
 
@@ -226,26 +234,27 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                            part->Mass(),
                            part->Status());
     double vtx[4] = {part->Vx(), part->Vy(), part->Vz(), part->Vt()};
-    /*
-    if ( vtx[0] == 0 &&
-         vtx[1] == 0 &&
-         vtx[2] == 0 &&
-         vtx[3] == 0 ) {
-      //mf::LogInfo("GENIEHelper") << "tweak vtx[3] for MCParticle";
-      vtx[3] = 1.0e-30;
-    }
-    */
+
+    // save the "relative to the nucleus" (fermimeter) particle offsets
     tpart.SetGvtx(vtx);
+
     tpart.SetRescatter(part->RescatterCode());
 
     // set the vertex location for the neutrino, nucleus and everything
-    // that is to be tracked.  vertex returns values in meters.
-    if (part->Status() == 0 || part->Status() == 1){
-      vtx[0] = 100.*(part->Vx()*1.e-15 + vertex->X() + vtxOffset.X());
-      vtx[1] = 100.*(part->Vy()*1.e-15 + vertex->Y() + vtxOffset.Y());
-      vtx[2] = 100.*(part->Vz()*1.e-15 + vertex->Z() + vtxOffset.Z());
-      vtx[3] = part->Vt() + vtxOffset.T();
-    }
+    // that is to be tracked.  GENIE interaction vertex is in meters.
+    // GENIE individual particles are in fermi and
+    // times are in yoctoseconds (10^{-24})
+    // MCTruth uses units of (cm, ns)
+    // GVtx stores position relative to struck nucleus, so we don't
+    // need to do anything special to recover that info for rewgt purposes
+    vtx[0] = 100.*( part->Vx()*1.e-15 + vertex->X()) + vtxOffset.X();
+    vtx[1] = 100.*( part->Vy()*1.e-15 + vertex->Y()) + vtxOffset.Y();
+    vtx[2] = 100.*( part->Vz()*1.e-15 + vertex->Z()) + vtxOffset.Z();
+    const double yocto2ns = 1.0e-15; // 1.0e-24 / 1.0e-9;
+    vtx[3] = yocto2ns*part->Vt() + vtxOffset.T();
+    // GENIE vertex time is in seconds, MCTruth time in ns
+    if (addGenieVtxTime) vtx[3] += vertex->T() * 1.0e-9;
+
     TLorentzVector pos(vtx[0], vtx[1], vtx[2], vtx[3]);
     TLorentzVector mom(part->Px(), part->Py(), part->Pz(), part->E());
     tpart.AddTrajectoryPoint(pos,mom);
@@ -541,55 +550,6 @@ genie::EventRecord* evgb::RetrieveGHEP(const simb::MCTruth& mctruth,
     double gmvy = mcpart.Gvy();
     double gmvz = mcpart.Gvz();
     double gmvt = mcpart.Gvt();
-    bool GvtxFunky = false;
-    if ( gmvx == 0 && gmvy == 0 &&
-         gmvz == 0 && gmvt == 0 ) GvtxFunky = true;
-    if ( gmvx == simb::GTruth::kUndefinedValue &&
-         gmvy == simb::GTruth::kUndefinedValue &&
-         gmvz == simb::GTruth::kUndefinedValue &&
-         gmvt == simb::GTruth::kUndefinedValue    ) GvtxFunky = true;
-    if (GvtxFunky) {
-      static int nmsg = 0;  // don't warn about this for now
-      if (nmsg > 0) {
-        --nmsg;
-        std::string andOut = "";
-        if (nmsg == 0 ) andOut = "... last of such messages";
-        mf::LogWarning("GENIE2ART")
-          << "RetrieveGHEP(simb::MCTruth,simb::Gtruth) ... Gv[xyzt] all "
-          << gmvx << " for index " << i
-          << "; probably not filled ..."
-          << andOut << std::endl;
-      }
-      // MCParticle Vx(), Vy(), Vz() implicitly are  index=0
-      // put it's likely we want the _last_ position ...
-      const TLorentzVector mcpartTrjPos =
-        ( useFirstTrajPosition ) ? mcpart.Position() : // default indx=0
-                                   mcpart.EndPosition();
-      unsigned int nTrj = mcpart.NumberTrajectoryPoints();
-      if ( nTrj < 1 ) // || nTrj > 1 )
-        mf::LogWarning("GENIE2ART") << "############### nTrj = " << nTrj;
-
-      // set the vertex location for the neutrino, nucleus and everything
-      // that is to be tracked.  vertex returns values in meters.
-      if ( mcpart.StatusCode() == 0 || mcpart.StatusCode() == 1 ){
-        // inverse of this....
-        // mcpartvtx[0] = 100.*(gpart->Vx()*1.e-15 + vertex->X());
-        // mcpartvtx[1] = 100.*(gpart->Vy()*1.e-15 + vertex->Y());
-        // mcpartvtx[2] = 100.*(gpart->Vz()*1.e-15 + vertex->Z());
-        // mcpartvtx[3] = gpart->Vt() + spillTime;
-        // local "vtx" is equiv to "vertex"  ; solve for (genie)part->V
-        gmvx = 1.e15*((mcpartTrjPos.X()*1.e-2) - vtx.X());
-        gmvy = 1.e15*((mcpartTrjPos.Y()*1.e-2) - vtx.Y());
-        gmvz = 1.e15*((mcpartTrjPos.Z()*1.e-2) - vtx.Z());
-        gmvt = mcpartTrjPos.T() - vtx.T();
-      } else {
-        gmvx = mcpartTrjPos.X();
-        gmvy = mcpartTrjPos.Y();
-        gmvz = mcpartTrjPos.Z();
-        gmvt = mcpartTrjPos.T();
-      }
-
-    } // if Gv[xyzt] seem unset
 
     int gmri = mcpart.Rescatter();
 
