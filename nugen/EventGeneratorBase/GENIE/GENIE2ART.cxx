@@ -478,7 +478,7 @@ void evgb::FillGTruth(const genie::EventRecord* record,
   // and only recording/resetting those that were originally there ...
   truth.fgQ2 = kine.Q2(true);
   truth.fgq2 = kine.q2(true);
-  truth.fgW = kine.W(true);
+  truth.fgW  = kine.W(true);
   if ( kine.KVSet(genie::kKVSelt) ) {
     // only get this if it is set in the Kinematics class
     // to avoid a warning message
@@ -486,6 +486,11 @@ void evgb::FillGTruth(const genie::EventRecord* record,
   }
   truth.fgX = kine.x(true);
   truth.fgY = kine.y(true);
+  if ( kine.KVSet(genie::kKVW) ) {
+    // only get this if it is set in the Kinematics class
+    // to avoid a warning message
+    truth.fgWrun = kine.W(false);
+  }
 
   /*
     truth.fgQ2 = kine.Q2(false);
@@ -649,6 +654,8 @@ genie::EventRecord* evgb::RetrieveGHEP(const simb::MCTruth& mctruth,
   if ( gtruth.fgW  != flagVal) gkin.SetW(gtruth.fgW, true);
   if ( gtruth.fgQ2 != flagVal) gkin.SetQ2(gtruth.fgQ2, true);
   if ( gtruth.fgq2 != flagVal) gkin.Setq2(gtruth.fgq2, true);
+  if ( gtruth.fgWrun != flagVal) gkin.SetW(gtruth.fgWrun, false);
+
   simb::MCNeutrino nu = mctruth.GetNeutrino();
   simb::MCParticle lep = nu.Lepton();
   // is this even real?
