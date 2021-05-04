@@ -16,11 +16,11 @@ libdir      fq_dir      lib
 bindir      product_dir bin
 #
 product         version
-art_root_io     v1_05_02
+art_root_io     v1_07_00
 nusimdata       v1_22_02
-dk2nugenie      v01_08_00n
-ifdh_art        v2_11_05
-cetbuildtools   v7_17_01        -        only_for_build
+dk2nugenie      v01_08_00o
+ifdh_art        v2_12_00
+cetbuildtools   v8_07_00        -        only_for_build
 end_product_list
 
 
