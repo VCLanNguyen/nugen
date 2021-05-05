@@ -180,6 +180,8 @@ namespace evgb {
     double                   fGlobalTimeOffset;  ///< overall time shift (ns) added to every particle time
     double                   fRandomTimeOffset;  ///< additional random time shift (ns) added to every particle time
     std::string              fSpillTimeConfig;   ///< alternative to flat spill distribution
+    bool                     fAddGenieVtxTime;   ///< incorporate time from flux window to interaction point and (possibily) proton-on-target to flux window
+
     std::vector<int>         fGenFlavors;        ///< pdg codes for flavors to generate
     double                   fAtmoEmin;          ///< atmo: Minimum energy of neutrinos in GeV
     double                   fAtmoEmax;          ///< atmo: Maximum energy of neutrinos in GeV
