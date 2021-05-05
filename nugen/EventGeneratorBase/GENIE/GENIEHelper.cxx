@@ -256,6 +256,7 @@ namespace evgb {
     , fGlobalTimeOffset  (pset.get< double                   >("GlobalTimeOffset", 1.e4) )
     , fRandomTimeOffset  (pset.get< double                   >("RandomTimeOffset", 1.e4) )
     , fSpillTimeConfig   (pset.get< std::string              >("SpillTimeConfig",    "") )
+    , fAddGenieVtxTime   (pset.get< bool                     >("AddGenieVtxTime", false) )
     , fGenFlavors        (pset.get< std::vector<int>         >("GenFlavors")             )
     , fAtmoEmin          (pset.get< double                   >("AtmoEmin",          0.1) )
     , fAtmoEmax          (pset.get< double                   >("AtmoEmax",         10.0) )
@@ -1629,7 +1630,7 @@ namespace evgb {
     double spilltime  = fGlobalTimeOffset + timeoffset;
 
     evgb::FillMCTruth(fGenieEventRecord, spilltime, truth,
-                      __GENIE_RELEASE__, fTuneName);
+                      __GENIE_RELEASE__, fTuneName, fAddGenieVtxTime );
     evgb::FillGTruth(fGenieEventRecord, gtruth);
 
     // check to see if we are using flux ntuples but want to
