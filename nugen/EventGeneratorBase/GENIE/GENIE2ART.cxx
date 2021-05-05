@@ -49,6 +49,7 @@
   #include "GENIE/Framework/Conventions/GVersion.h"
   #include "GENIE/Framework/Conventions/Units.h"
   #include "GENIE/Framework/Conventions/Constants.h" //for calculating event kinematics
+  #include "GENIE/Framework/Utils/PrintUtils.h"
   #include "GENIE/Framework/ParticleData/PDGCodes.h"
   #include "GENIE/Framework/ParticleData/PDGCodeList.h"
   #include "GENIE/Framework/ParticleData/PDGLibrary.h"
@@ -197,6 +198,8 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                        bool addGenieVtxTime)
 {
   // offset vector is assmed to be in (cm,ns) which is MCTruth's units
+
+  // GENIE's vertex is in (meters,seconds)
   TLorentzVector *vertex = record->Vertex();
 
   // get the Interaction object from the record - this is the object
@@ -225,6 +228,15 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
   int trackid = 0;
   std::string primary("primary");
 
+  /*
+  // for debugging purposes ...
+  mf::LogWarning("GENIE2ART")
+    << "addGenieVtxTime is "
+    << (addGenieVtxTime?"true":"false") << " if true, added "
+    << vertex->T() * 1.0e9 << " ns GENIE Vtx "
+    << genie::utils::print::X4AsString(vertex);
+  */
+
   while( (part = dynamic_cast<genie::GHepParticle *>(partitr.Next())) ){
 
     simb::MCParticle tpart(trackid,
@@ -250,10 +262,10 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
     vtx[0] = 100.*( part->Vx()*1.e-15 + vertex->X()) + vtxOffset.X();
     vtx[1] = 100.*( part->Vy()*1.e-15 + vertex->Y()) + vtxOffset.Y();
     vtx[2] = 100.*( part->Vz()*1.e-15 + vertex->Z()) + vtxOffset.Z();
-    const double yocto2ns = 1.0e-15; // 1.0e-24 / 1.0e-9;
+    const double yocto2ns = 1.0e-15; // 1.0e-24 yoctos/s / 1.0e-9 ns/s
     vtx[3] = yocto2ns*part->Vt() + vtxOffset.T();
     // GENIE vertex time is in seconds, MCTruth time in ns
-    if (addGenieVtxTime) vtx[3] += vertex->T() * 1.0e-9;
+    if (addGenieVtxTime) vtx[3] += vertex->T() * 1.0e9;
 
     TLorentzVector pos(vtx[0], vtx[1], vtx[2], vtx[3]);
     TLorentzVector mom(part->Px(), part->Py(), part->Pz(), part->E());
