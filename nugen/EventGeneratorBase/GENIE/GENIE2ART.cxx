@@ -262,7 +262,7 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
     vtx[0] = 100.*( part->Vx()*1.e-15 + vertex->X()) + vtxOffset.X();
     vtx[1] = 100.*( part->Vy()*1.e-15 + vertex->Y()) + vtxOffset.Y();
     vtx[2] = 100.*( part->Vz()*1.e-15 + vertex->Z()) + vtxOffset.Z();
-    const double yocto2ns = 1.0e-15; // 1.0e-24 yoctos/s / 1.0e-9 ns/s
+    const double yocto2ns = 1.0e-15; // 1.0e-24 sec/yoctosec / 1.0e-9 sec/ns
     vtx[3] = yocto2ns*part->Vt() + vtxOffset.T();
     // GENIE vertex time is in seconds, MCTruth time in ns
     if (addGenieVtxTime) vtx[3] += vertex->T() * 1.0e9;
