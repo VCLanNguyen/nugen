@@ -28,10 +28,8 @@ evgb::MCTruthAndFriendsItr::MCTruthAndFriendsItr(art::Event const & evtIn,
 {
 
   // look for any existing MCTruth info in this event
-  mclists.clear();
-
   if ( fInputModuleLabels.size()==0) {
-    evt.getManyByType(mclists);
+    mclists = evt.getMany<std::vector<simb::MCTruth>>();
     // std::cout << "evt.getManyByType" << std::endl;
   } else {
     mclists.resize(fInputModuleLabels.size());
