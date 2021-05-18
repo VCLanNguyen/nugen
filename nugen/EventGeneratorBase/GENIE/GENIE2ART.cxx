@@ -49,6 +49,7 @@
   #include "GENIE/Framework/Conventions/GVersion.h"
   #include "GENIE/Framework/Conventions/Units.h"
   #include "GENIE/Framework/Conventions/Constants.h" //for calculating event kinematics
+  #include "GENIE/Framework/Utils/PrintUtils.h"
   #include "GENIE/Framework/ParticleData/PDGCodes.h"
   #include "GENIE/Framework/ParticleData/PDGCodeList.h"
   #include "GENIE/Framework/ParticleData/PDGLibrary.h"
@@ -182,18 +183,23 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                        double spillTime,
                        simb::MCTruth &truth,
                        const std::string & genieVersion,
-                       const std::string & genieTune)
+                       const std::string & genieTune,
+                       bool addGenieVtxTime)
 {
   TLorentzVector vtxOffset(0,0,0,spillTime);
-  FillMCTruth(record,vtxOffset,truth,genieVersion,genieTune);
+  FillMCTruth(record,vtxOffset,truth,genieVersion,genieTune,addGenieVtxTime);
 }
 
 void evgb::FillMCTruth(const genie::EventRecord *record,
                        TLorentzVector &vtxOffset,
                        simb::MCTruth  &truth,
                        const std::string & genieVersion,
-                       const std::string & genieTune)
+                       const std::string & genieTune,
+                       bool addGenieVtxTime)
 {
+  // offset vector is assmed to be in (cm,ns) which is MCTruth's units
+
+  // GENIE's vertex is in (meters,seconds)
   TLorentzVector *vertex = record->Vertex();
 
   // get the Interaction object from the record - this is the object
@@ -211,11 +217,25 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
   // add the particles from the interaction
   TIter partitr(record);
   genie::GHepParticle *part = 0;
-  // GHepParticles return units of GeV/c for p.  the V_i are all in fermis
-  // and are relative to the center of the struck nucleus.
-  // add the vertex X/Y/Z to the V_i for status codes 0 and 1
+  // GHepParticles return units of GeV/c for p.
+  // The V_i are all in fermis and are relative to the center
+  // of the struck nucleus.
+  // prior to GENIE R-3_02_00 time was always zero
+  // thereafter that it is given in units of yoctoseconds (10^{-24})
+  // add the lab vertex X/Y/Z to the V_i for everything
+  // (store the true fermi distance in GVtx to be retrievable)
+
   int trackid = 0;
   std::string primary("primary");
+
+  /*
+  // for debugging purposes ...
+  mf::LogWarning("GENIE2ART")
+    << "addGenieVtxTime is "
+    << (addGenieVtxTime?"true":"false") << " if true, added "
+    << vertex->T() * 1.0e9 << " ns GENIE Vtx "
+    << genie::utils::print::X4AsString(vertex);
+  */
 
   while( (part = dynamic_cast<genie::GHepParticle *>(partitr.Next())) ){
 
@@ -226,26 +246,27 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                            part->Mass(),
                            part->Status());
     double vtx[4] = {part->Vx(), part->Vy(), part->Vz(), part->Vt()};
-    /*
-    if ( vtx[0] == 0 &&
-         vtx[1] == 0 &&
-         vtx[2] == 0 &&
-         vtx[3] == 0 ) {
-      //mf::LogInfo("GENIEHelper") << "tweak vtx[3] for MCParticle";
-      vtx[3] = 1.0e-30;
-    }
-    */
+
+    // save the "relative to the nucleus" (fermimeter) particle offsets
     tpart.SetGvtx(vtx);
+
     tpart.SetRescatter(part->RescatterCode());
 
     // set the vertex location for the neutrino, nucleus and everything
-    // that is to be tracked.  vertex returns values in meters.
-    if (part->Status() == 0 || part->Status() == 1){
-      vtx[0] = 100.*(part->Vx()*1.e-15 + vertex->X() + vtxOffset.X());
-      vtx[1] = 100.*(part->Vy()*1.e-15 + vertex->Y() + vtxOffset.Y());
-      vtx[2] = 100.*(part->Vz()*1.e-15 + vertex->Z() + vtxOffset.Z());
-      vtx[3] = part->Vt() + vtxOffset.T();
-    }
+    // that is to be tracked.  GENIE interaction vertex is in meters.
+    // GENIE individual particles are in fermi and
+    // times are in yoctoseconds (10^{-24})
+    // MCTruth uses units of (cm, ns)
+    // GVtx stores position relative to struck nucleus, so we don't
+    // need to do anything special to recover that info for rewgt purposes
+    vtx[0] = 100.*( part->Vx()*1.e-15 + vertex->X()) + vtxOffset.X();
+    vtx[1] = 100.*( part->Vy()*1.e-15 + vertex->Y()) + vtxOffset.Y();
+    vtx[2] = 100.*( part->Vz()*1.e-15 + vertex->Z()) + vtxOffset.Z();
+    const double yocto2ns = 1.0e-15; // 1.0e-24 sec/yoctosec / 1.0e-9 sec/ns
+    vtx[3] = yocto2ns*part->Vt() + vtxOffset.T();
+    // GENIE vertex time is in seconds, MCTruth time in ns
+    if (addGenieVtxTime) vtx[3] += vertex->T() * 1.0e9;
+
     TLorentzVector pos(vtx[0], vtx[1], vtx[2], vtx[3]);
     TLorentzVector mom(part->Px(), part->Py(), part->Pz(), part->E());
     tpart.AddTrajectoryPoint(pos,mom);
@@ -266,11 +287,16 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
   // what is the interaction type
   int mode = simb::kUnknownInteraction;
 
-  if     (procInfo.IsQuasiElastic()       ) mode = simb::kQE;
+  if      (procInfo.IsQuasiElastic()       ) mode = simb::kQE;
   else if (procInfo.IsDeepInelastic()      ) mode = simb::kDIS;
   else if (procInfo.IsResonant()           ) mode = simb::kRes;
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  else if (procInfo.IsCoherentProduction() ) mode = simb::kCoh;
+  else if (procInfo.IsCoherentElastic()    ) mode = simb::kCohElastic;
+#else
   else if (procInfo.IsCoherent()           ) mode = simb::kCoh;
   else if (procInfo.IsCoherentElas()       ) mode = simb::kCohElastic;
+#endif
   else if (procInfo.IsElectronScattering() ) mode = simb::kElectronScattering;
   else if (procInfo.IsNuElectronElastic()  ) mode = simb::kNuElectronElastic;
   else if (procInfo.IsInverseMuDecay()     ) mode = simb::kInverseMuDecay;
@@ -328,7 +354,11 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
   double x, W2, W;
   x = W2 = W = -1;
 
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  if ( hitnucl || procInfo.IsCoherentProduction() ) {
+#else
   if ( hitnucl || procInfo.IsCoherent() ) {
+#endif
     const double M  = genie::constants::kNucleonMass;
     // Bjorken x.
     // Rein & Sehgal use this same formulation of x even for Coherent
@@ -382,18 +412,30 @@ void evgb::FillGTruth(const genie::EventRecord* record,
   truth.fCharmHadronPdg   = exclTag.CharmHadronPdg();
   truth.fIsStrange        = exclTag.IsStrangeEvent();
   truth.fStrangeHadronPdg = exclTag.StrangeHadronPdg();
-  truth.fResNum    = (int)exclTag.Resonance();
-  truth.fDecayMode = exclTag.DecayMode();
+  truth.fResNum           = (int)exclTag.Resonance();
+  truth.fDecayMode        = exclTag.DecayMode();
 
-  //note that in principle this information could come from the XclsTag,
-  //but that object isn't completely filled for most reactions,
-  //at least for GENIE <= 2.12
-//    truth.fNumPiPlus = exclTag.NPiPlus();
-//    truth.fNumPiMinus = exclTag.NPiMinus();
-//    truth.fNumPi0 = exclTag.NPi0();
-//    truth.fNumProton = exclTag.NProtons();
-//    truth.fNumNeutron = exclTag.NNucleons();
-  truth.fNumPiPlus = truth.fNumPiMinus = truth.fNumPi0 = truth.fNumProton = truth.fNumNeutron = 0;
+  truth.fNumPiPlus = truth.fNumPiMinus = truth.fNumPi0 = 0;
+  truth.fNumProton = truth.fNumNeutron = 0;
+  truth.fNumSingleGammas = 0;
+  truth.fNumRho0 = truth.fNumRhoPlus = truth.fNumRhoMinus = 0;
+
+  //#define FILL_XCLS_OURSELVES
+#ifndef FILL_XCLS_OURSELVES
+  truth.fNumProton       = exclTag.NProtons();
+  truth.fNumNeutron      = exclTag.NNeutrons();
+  truth.fNumPi0          = exclTag.NPi0();
+  truth.fNumPiPlus       = exclTag.NPiPlus();
+  truth.fNumPiMinus      = exclTag.NPiMinus();
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  truth.fNumSingleGammas = exclTag.NSingleGammas();
+  truth.fNumRho0         = exclTag.NRho0();
+  truth.fNumRhoPlus      = exclTag.NRhoPlus();
+  truth.fNumRhoMinus     = exclTag.NRhoMinus();
+#endif
+#else
+  // try to fill the counts ourselves ...
+  // most events don't have any of these set
   for (int idx = 0; idx < record->GetEntries(); idx++)
   {
     // want hadrons that are about to be sent to the FSI model
@@ -402,7 +444,19 @@ void evgb::FillGTruth(const genie::EventRecord* record,
       continue;
 
     int pdg = particle->Pdg();
-    if (pdg == genie::kPdgPi0)
+    switch ( pdg ) {
+    case genie::kPdgPi0:     truth.fNumPi0++;          break;
+    case genie::kPdgPiP:     truth.fNumPiPlus++;       break;
+    case genie::kPdgPiM:     truth.fNumPiMinus++;      break;
+    case genie::kPdgNeutron: truth.fNumNeutron++;      break;
+    case genie::kPdgProton:  truth.fNumProton++;       break;
+    case genie::kPdgGamma:   truth.fNumSingleGammas++; break;
+    case genie::kPdgRho0:    truth.fNumRho0++;         break;
+    case genie::kPdgRhoP:    truth.fNumRhoPlus++;      break;
+    case genie::kPdgRhoM:    truth.fNumRhoMinus++;     break;
+    }
+    /*
+    if      (pdg == genie::kPdgPi0)
       truth.fNumPi0++;
     else if (pdg == genie::kPdgPiP)
       truth.fNumPiPlus++;
@@ -412,7 +466,23 @@ void evgb::FillGTruth(const genie::EventRecord* record,
       truth.fNumNeutron++;
     else if (pdg == genie::kPdgProton)
       truth.fNumProton++;
+    else if (pdg == genie::kPdgGamma)
+      truth.fNumSingleGammas++;
+    else if (pdg == genie::kPdgRho0)
+      truth.fNumRho0++;
+    else if (pdg == genie::kPdgRhoP)
+      truth.fNumRhoPlus++;
+    else if (pdg == genie::kPdgRhoM)
+      truth.fNumRhoMinus++;
+    */
+
   } // for (idx)
+#endif
+
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  truth.fFinalQuarkPdg  = exclTag.FinalQuarkPdg();
+  truth.fFinalLeptonPdg = exclTag.FinalLeptonPdg();
+#endif
 
   // Get the GENIE kinematics info
   const genie::Kinematics &kine = inter->Kine();
@@ -420,7 +490,7 @@ void evgb::FillGTruth(const genie::EventRecord* record,
   // and only recording/resetting those that were originally there ...
   truth.fgQ2 = kine.Q2(true);
   truth.fgq2 = kine.q2(true);
-  truth.fgW = kine.W(true);
+  truth.fgW  = kine.W(true);
   if ( kine.KVSet(genie::kKVSelt) ) {
     // only get this if it is set in the Kinematics class
     // to avoid a warning message
@@ -428,6 +498,11 @@ void evgb::FillGTruth(const genie::EventRecord* record,
   }
   truth.fgX = kine.x(true);
   truth.fgY = kine.y(true);
+  if ( kine.KVSet(genie::kKVW) ) {
+    // only get this if it is set in the Kinematics class
+    // to avoid a warning message
+    truth.fgWrun = kine.W(false);
+  }
 
   /*
     truth.fgQ2 = kine.Q2(false);
@@ -532,55 +607,6 @@ genie::EventRecord* evgb::RetrieveGHEP(const simb::MCTruth& mctruth,
     double gmvy = mcpart.Gvy();
     double gmvz = mcpart.Gvz();
     double gmvt = mcpart.Gvt();
-    bool GvtxFunky = false;
-    if ( gmvx == 0 && gmvy == 0 &&
-         gmvz == 0 && gmvt == 0 ) GvtxFunky = true;
-    if ( gmvx == simb::GTruth::kUndefinedValue &&
-         gmvy == simb::GTruth::kUndefinedValue &&
-         gmvz == simb::GTruth::kUndefinedValue &&
-         gmvt == simb::GTruth::kUndefinedValue    ) GvtxFunky = true;
-    if (GvtxFunky) {
-      static int nmsg = 0;  // don't warn about this for now
-      if (nmsg > 0) {
-        --nmsg;
-        std::string andOut = "";
-        if (nmsg == 0 ) andOut = "... last of such messages";
-        mf::LogWarning("GENIE2ART")
-          << "RetrieveGHEP(simb::MCTruth,simb::Gtruth) ... Gv[xyzt] all "
-          << gmvx << " for index " << i
-          << "; probably not filled ..."
-          << andOut << std::endl;
-      }
-      // MCParticle Vx(), Vy(), Vz() implicitly are  index=0
-      // put it's likely we want the _last_ position ...
-      const TLorentzVector mcpartTrjPos =
-        ( useFirstTrajPosition ) ? mcpart.Position() : // default indx=0
-                                   mcpart.EndPosition();
-      unsigned int nTrj = mcpart.NumberTrajectoryPoints();
-      if ( nTrj < 1 ) // || nTrj > 1 )
-        mf::LogWarning("GENIE2ART") << "############### nTrj = " << nTrj;
-
-      // set the vertex location for the neutrino, nucleus and everything
-      // that is to be tracked.  vertex returns values in meters.
-      if ( mcpart.StatusCode() == 0 || mcpart.StatusCode() == 1 ){
-        // inverse of this....
-        // mcpartvtx[0] = 100.*(gpart->Vx()*1.e-15 + vertex->X());
-        // mcpartvtx[1] = 100.*(gpart->Vy()*1.e-15 + vertex->Y());
-        // mcpartvtx[2] = 100.*(gpart->Vz()*1.e-15 + vertex->Z());
-        // mcpartvtx[3] = gpart->Vt() + spillTime;
-        // local "vtx" is equiv to "vertex"  ; solve for (genie)part->V
-        gmvx = 1.e15*((mcpartTrjPos.X()*1.e-2) - vtx.X());
-        gmvy = 1.e15*((mcpartTrjPos.Y()*1.e-2) - vtx.Y());
-        gmvz = 1.e15*((mcpartTrjPos.Z()*1.e-2) - vtx.Z());
-        gmvt = mcpartTrjPos.T() - vtx.T();
-      } else {
-        gmvx = mcpartTrjPos.X();
-        gmvy = mcpartTrjPos.Y();
-        gmvz = mcpartTrjPos.Z();
-        gmvt = mcpartTrjPos.T();
-      }
-
-    } // if Gv[xyzt] seem unset
 
     int gmri = mcpart.Rescatter();
 
@@ -608,6 +634,14 @@ genie::EventRecord* evgb::RetrieveGHEP(const simb::MCTruth& mctruth,
   gxt.SetDecayMode(gtruth.fDecayMode);
   gxt.SetNPions(gtruth.fNumPiPlus, gtruth.fNumPi0, gtruth.fNumPiMinus);
   gxt.SetNNucleons(gtruth.fNumProton, gtruth.fNumNeutron);
+#if __GENIE_RELEASE_CODE__ >= GRELCODE(3,2,0)
+  gxt.SetNSingleGammas(gtruth.fNumSingleGammas);
+  gxt.SetNRhos(gtruth.fNumRhoPlus, gtruth.fNumRho0, gtruth.fNumRhoMinus);
+  if ( gtruth.fFinalQuarkPdg  != 0 )
+    gxt.SetFinalQuark(gtruth.fFinalQuarkPdg);
+  if ( gtruth.fFinalLeptonPdg != 0 )
+    gxt.SetFinalLepton(gtruth.fFinalLeptonPdg);
+#endif
 
   if (gtruth.fIsCharm) {
     gxt.SetCharm(gtruth.fCharmHadronPdg);
@@ -632,6 +666,8 @@ genie::EventRecord* evgb::RetrieveGHEP(const simb::MCTruth& mctruth,
   if ( gtruth.fgW  != flagVal) gkin.SetW(gtruth.fgW, true);
   if ( gtruth.fgQ2 != flagVal) gkin.SetQ2(gtruth.fgQ2, true);
   if ( gtruth.fgq2 != flagVal) gkin.Setq2(gtruth.fgq2, true);
+  if ( gtruth.fgWrun != flagVal) gkin.SetW(gtruth.fgWrun, false);
+
   simb::MCNeutrino nu = mctruth.GetNeutrino();
   simb::MCParticle lep = nu.Lepton();
   // is this even real?
