@@ -49,6 +49,8 @@ standard_geniehelpertest:
    RandomTimeOffset:   9600.0         # length of spill in ns
    SpillTimeConfig:    "evgb::EvtTimeFNALBeam"   # overrides RandomTimeOffset
 
+   AddGenieVtxTime:  false
+
    # pdg code for which neutrinos to generate (at flux level)
    # use of flavor mixing might result in others in actual interactions
    GenFlavors:       [12,14,16,-12,-14,-16]

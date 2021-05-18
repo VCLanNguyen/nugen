@@ -48,13 +48,8 @@
   #include "GENIE/FluxDrivers/GNuMIFlux.h"
   #include "GENIE/FluxDrivers/GSimpleNtpFlux.h"
   #include "GENIE/FluxDrivers/GFluxDriverFactory.h"
-  #if __GENIE_RELEASE_CODE__ >= GRELCODE(2,11,0)
-    #include "GENIE/FluxDrivers/GBGLRSAtmoFlux.h"  //for atmo nu generation
-    #include "GENIE/FluxDrivers/GFLUKAAtmoFlux.h"  //for atmo nu generation
-  #else
-    #include "GENIE/FluxDrivers/GBartolAtmoFlux.h"  //for atmo nu generation
-    #include "GENIE/FluxDrivers/GFlukaAtmo3DFlux.h" //for atmo nu generation
-  #endif
+  #include "GENIE/FluxDrivers/GBGLRSAtmoFlux.h"  //for atmo nu generation
+  #include "GENIE/FluxDrivers/GFLUKAAtmoFlux.h"  //for atmo nu generation
   #if __GENIE_RELEASE_CODE__ >= GRELCODE(2,12,2)
     #include "GENIE/FluxDrivers/GHAKKMAtmoFlux.h" // for atmo nu generation
   #endif
@@ -261,6 +256,7 @@ namespace evgb {
     , fGlobalTimeOffset  (pset.get< double                   >("GlobalTimeOffset", 1.e4) )
     , fRandomTimeOffset  (pset.get< double                   >("RandomTimeOffset", 1.e4) )
     , fSpillTimeConfig   (pset.get< std::string              >("SpillTimeConfig",    "") )
+    , fAddGenieVtxTime   (pset.get< bool                     >("AddGenieVtxTime", false) )
     , fGenFlavors        (pset.get< std::vector<int>         >("GenFlavors")             )
     , fAtmoEmin          (pset.get< double                   >("AtmoEmin",          0.1) )
     , fAtmoEmax          (pset.get< double                   >("AtmoEmax",         10.0) )
@@ -1274,24 +1270,14 @@ namespace evgb {
       genie::flux::GAtmoFlux *atmo_flux_driver = 0;
 
       if ( fFluxType.find("FLUKA") != std::string::npos ) {
-#if __GENIE_RELEASE_CODE__ >= GRELCODE(2,11,0)
         genie::flux::GFLUKAAtmoFlux * fluka_flux =
           new genie::flux::GFLUKAAtmoFlux;
-#else
-        genie::flux::GFlukaAtmo3DFlux * fluka_flux =
-          new genie::flux::GFlukaAtmo3DFlux;
-#endif
         atmo_flux_driver = dynamic_cast<genie::flux::GAtmoFlux *>(fluka_flux);
       }
       if ( fFluxType.find("BARTOL") != std::string::npos ||
            fFluxType.find("BGLRS")  != std::string::npos    ) {
-#if __GENIE_RELEASE_CODE__ >= GRELCODE(2,11,0)
         genie::flux::GBGLRSAtmoFlux * bartol_flux =
           new genie::flux::GBGLRSAtmoFlux;
-#else
-        genie::flux::GBartolAtmoFlux * bartol_flux =
-          new genie::flux::GBartolAtmoFlux;
-#endif
         atmo_flux_driver = dynamic_cast<genie::flux::GAtmoFlux *>(bartol_flux);
       }
 #if __GENIE_RELEASE_CODE__ >= GRELCODE(2,12,2)
@@ -1617,8 +1603,6 @@ namespace evgb {
     // update the spill total information, then check to see
     // if we got an event record that was valid
 
-
-#if __GENIE_RELEASE_CODE__ >= GRELCODE(2,11,0)
     genie::flux::GFluxExposureI* fexposure =
       dynamic_cast<genie::flux::GFluxExposureI*>(fFluxD);
     if ( fexposure ) {
@@ -1627,25 +1611,10 @@ namespace evgb {
     }
     // use GENIE2ART code to fill MCFlux
     evgb::FillMCFlux(fFluxD,flux);
-#else
-    // pack the flux information no support for dk2nu
-    if ( fFluxType.find("tree_numi") == 0 ) {
-      fSpillExposure = (dynamic_cast<genie::flux::GNuMIFlux *>(fFluxD)->UsedPOTs()/fDriver->GlobProbScale() - fTotalExposure);
-      flux.fFluxType = simb::kNtuple;
-      PackNuMIFlux(flux);
-    }
-    else if ( fFluxType.find("tree_simple") == 0 ) {
-      // pack the flux information
-      fSpillExposure = (dynamic_cast<genie::flux::GSimpleNtpFlux *>(fFluxD)->UsedPOTs()/fDriver->GlobProbScale() - fTotalExposure);
-      flux.fFluxType = simb::kSimple_Flux;
-      PackSimpleFlux(flux);
-    }
-#endif
 
     // if no interaction generated return false
     if ( ! viableInteraction ) return false;
 
-#if __GENIE_RELEASE_CODE__ >= GRELCODE(2,11,0)
     // fill the MCTruth & GTruth information as we have a good interaction
     // these two objects are enough to reconstruct the GENIE record
     // use the new external functions in GENIE2ART
@@ -1660,14 +1629,9 @@ namespace evgb {
     // mf::LogInfo("GENIEHelper") << "TimeShifter adding " << timeoffset;
     double spilltime  = fGlobalTimeOffset + timeoffset;
 
-    evgb::FillMCTruth(fGenieEventRecord, spilltime, truth, __GENIE_RELEASE__, fTuneName);
+    evgb::FillMCTruth(fGenieEventRecord, spilltime, truth,
+                      __GENIE_RELEASE__, fTuneName, fAddGenieVtxTime );
     evgb::FillGTruth(fGenieEventRecord, gtruth);
-#else
-    // fill the MC truth information as we have a good interaction
-    PackMCTruth(fGenieEventRecord,truth);
-    // fill the Generator (genie) truth information
-    PackGTruth(fGenieEventRecord, gtruth);
-#endif
 
     // check to see if we are using flux ntuples but want to
     // make n events per spill
@@ -1752,502 +1716,6 @@ namespace evgb {
     fGeoManager->SetTopVolume(fGeoManager->FindVolumeFast(fWorldVolume.c_str()));
 
     return true;
-  }
-
-  //--------------------------------------------------
-  void GENIEHelper::PackNuMIFlux(simb::MCFlux &flux)
-  {
-    flux.Reset();
-
-    // cast the fFluxD pointer to be of the right type
-    genie::flux::GNuMIFlux *gnf = dynamic_cast<genie::flux::GNuMIFlux *>(fFluxD);
-    const genie::flux::GNuMIFluxPassThroughInfo& nflux = gnf->PassThroughInfo();
-
-    // check the particle codes and the units passed through
-    //  nflux.pcodes: 0=original GEANT particle codes, 1=converted to PDG
-    //  nflux.units:  0=original GEANT cm, 1=meters
-    if(nflux.pcodes != 1 && nflux.units != 0)
-      mf::LogWarning("GENIEHelper") << "either wrong particle codes or units "
-                                    << "from flux object - beware!!";
-
-    // maintained variable names from gnumi ntuples
-    // see http://www.hep.utexas.edu/~zarko/wwwgnumi/v19/[/v19/output_gnumi.html]
-
-    flux.frun      = nflux.run;
-    flux.fevtno    = nflux.evtno;
-    flux.fndxdz    = nflux.ndxdz;
-    flux.fndydz    = nflux.ndydz;
-    flux.fnpz      = nflux.npz;
-    flux.fnenergy  = nflux.nenergy;
-    flux.fndxdznea = nflux.ndxdznea;
-    flux.fndydznea = nflux.ndydznea;
-    flux.fnenergyn = nflux.nenergyn;
-    flux.fnwtnear  = nflux.nwtnear;
-    flux.fndxdzfar = nflux.ndxdzfar;
-    flux.fndydzfar = nflux.ndydzfar;
-    flux.fnenergyf = nflux.nenergyf;
-    flux.fnwtfar   = nflux.nwtfar;
-    flux.fnorig    = nflux.norig;
-    flux.fndecay   = nflux.ndecay;
-    flux.fntype    = nflux.ntype;
-    flux.fvx       = nflux.vx;
-    flux.fvy       = nflux.vy;
-    flux.fvz       = nflux.vz;
-    flux.fpdpx     = nflux.pdpx;
-    flux.fpdpy     = nflux.pdpy;
-    flux.fpdpz     = nflux.pdpz;
-    flux.fppdxdz   = nflux.ppdxdz;
-    flux.fppdydz   = nflux.ppdydz;
-    flux.fpppz     = nflux.pppz;
-    flux.fppenergy = nflux.ppenergy;
-    flux.fppmedium = nflux.ppmedium;
-    flux.fptype    = nflux.ptype;     // converted to PDG
-    flux.fppvx     = nflux.ppvx;
-    flux.fppvy     = nflux.ppvy;
-    flux.fppvz     = nflux.ppvz;
-    flux.fmuparpx  = nflux.muparpx;
-    flux.fmuparpy  = nflux.muparpy;
-    flux.fmuparpz  = nflux.muparpz;
-    flux.fmupare   = nflux.mupare;
-    flux.fnecm     = nflux.necm;
-    flux.fnimpwt   = nflux.nimpwt;
-    flux.fxpoint   = nflux.xpoint;
-    flux.fypoint   = nflux.ypoint;
-    flux.fzpoint   = nflux.zpoint;
-    flux.ftvx      = nflux.tvx;
-    flux.ftvy      = nflux.tvy;
-    flux.ftvz      = nflux.tvz;
-    flux.ftpx      = nflux.tpx;
-    flux.ftpy      = nflux.tpy;
-    flux.ftpz      = nflux.tpz;
-    flux.ftptype   = nflux.tptype;   // converted to PDG
-    flux.ftgen     = nflux.tgen;
-    flux.ftgptype  = nflux.tgptype;  // converted to PDG
-    flux.ftgppx    = nflux.tgppx;
-    flux.ftgppy    = nflux.tgppy;
-    flux.ftgppz    = nflux.tgppz;
-    flux.ftprivx   = nflux.tprivx;
-    flux.ftprivy   = nflux.tprivy;
-    flux.ftprivz   = nflux.tprivz;
-    flux.fbeamx    = nflux.beamx;
-    flux.fbeamy    = nflux.beamy;
-    flux.fbeamz    = nflux.beamz;
-    flux.fbeampx   = nflux.beampx;
-    flux.fbeampy   = nflux.beampy;
-    flux.fbeampz   = nflux.beampz;
-
-    flux.fdk2gen   = gnf->GetDecayDist();
-
-    return;
-  }
-
-  //--------------------------------------------------
-  void GENIEHelper::PackMCTruth(genie::EventRecord *record,
-                                simb::MCTruth &truth)
-  {
-
-    TLorentzVector *vertex = record->Vertex();
-
-    // get the Interaction object from the record - this is the object
-    // that talks to the event information objects and is in m
-    genie::Interaction *inter = record->Summary();
-
-    // get the different components making up the interaction
-    const genie::InitialState &initState  = inter->InitState();
-    const genie::ProcessInfo  &procInfo   = inter->ProcInfo();
-    //const genie::Kinematics   &kine       = inter->Kine();
-    //const genie::XclsTag      &exclTag    = inter->ExclTag();
-    //const genie::KPhaseSpace  &phaseSpace = inter->PhaseSpace();
-
-    //choose a spill time (ns) to shift the vertex times by:
-
-    double spillTime = fGlobalTimeOffset + fHelperRandom->Uniform()*fRandomTimeOffset;
-
-    // add the particles from the interaction
-    TIter partitr(record);
-    genie::GHepParticle *part = 0;
-    // GHepParticles return units of GeV/c for p.  the V_i are all in fermis
-    // and are relative to the center of the struck nucleus.
-    // add the vertex X/Y/Z to the V_i for status codes 0 and 1
-    int trackid = 0;
-    std::string primary("primary");
-
-    while( (part = dynamic_cast<genie::GHepParticle *>(partitr.Next())) ){
-
-      simb::MCParticle tpart(trackid,
-                             part->Pdg(),
-                             primary,
-                             part->FirstMother(),
-                             part->Mass(),
-                             part->Status());
-      double vtx[4] = {part->Vx(), part->Vy(), part->Vz(), part->Vt()};
-      tpart.SetGvtx(vtx);
-      tpart.SetRescatter(part->RescatterCode());
-
-      // set the vertex location for the neutrino, nucleus and everything
-      // that is to be tracked.  vertex returns values in meters.
-      if(part->Status() == 0 || part->Status() == 1){
-        vtx[0] = 100.*(part->Vx()*1.e-15 + vertex->X());
-        vtx[1] = 100.*(part->Vy()*1.e-15 + vertex->Y());
-        vtx[2] = 100.*(part->Vz()*1.e-15 + vertex->Z());
-        vtx[3] = part->Vt() + spillTime;
-      }
-      TLorentzVector pos(vtx[0], vtx[1], vtx[2], vtx[3]);
-      TLorentzVector mom(part->Px(), part->Py(), part->Pz(), part->E());
-      tpart.AddTrajectoryPoint(pos,mom);
-      if(part->PolzIsSet()) {
-        TVector3 polz;
-        part->GetPolarization(polz);
-        tpart.SetPolarization(polz);
-      }
-      truth.Add(tpart);
-
-      ++trackid;
-    }// end loop to convert GHepParticles to MCParticles
-
-    // is the interaction NC or CC
-    int CCNC = simb::kCC;
-    if(procInfo.IsWeakNC()) CCNC = simb::kNC;
-
-    // what is the interaction type
-    int mode = simb::kUnknownInteraction;
-
-    if     (procInfo.IsQuasiElastic()       ) mode = simb::kQE;
-    else if(procInfo.IsDeepInelastic()      ) mode = simb::kDIS;
-    else if(procInfo.IsResonant()           ) mode = simb::kRes;
-    else if(procInfo.IsCoherent()           ) mode = simb::kCoh;
-    else if(procInfo.IsCoherentElas()       ) mode = simb::kCohElastic;
-    else if(procInfo.IsElectronScattering() ) mode = simb::kElectronScattering;
-    else if(procInfo.IsNuElectronElastic()  ) mode = simb::kNuElectronElastic;
-    else if(procInfo.IsInverseMuDecay()     ) mode = simb::kInverseMuDecay;
-    else if(procInfo.IsIMDAnnihilation()    ) mode = simb::kIMDAnnihilation;
-    else if(procInfo.IsInverseBetaDecay()   ) mode = simb::kInverseBetaDecay;
-    else if(procInfo.IsGlashowResonance()   ) mode = simb::kGlashowResonance;
-    else if(procInfo.IsAMNuGamma()          ) mode = simb::kAMNuGamma;
-    else if(procInfo.IsMEC()                ) mode = simb::kMEC;
-    else if(procInfo.IsDiffractive()        ) mode = simb::kDiffractive;
-    else if(procInfo.IsEM()                 ) mode = simb::kEM;
-    else if(procInfo.IsWeakMix()            ) mode = simb::kWeakMix;
-
-    int itype = simb::kNuanceOffset + genie::utils::ghep::NuanceReactionCode(record);
-
-    // set the neutrino information in MCTruth
-    truth.SetOrigin(simb::kBeamNeutrino);
-    truth.SetGeneratorInfo(simb::Generator_t::kGENIE,
-                           __GENIE_RELEASE__,
-                           {{"tune", fTuneName}});
-
-#ifdef OLD_KINE_CALC
-    // The genie event kinematics are subtle different from the event
-    // kinematics that a experimentalist would calculate
-    // Instead of retriving the genie values for these kinematic variables
-    // calcuate them from the the final state particles
-    // while ingnoring the fermi momentum and the off-shellness of the bound nucleon.
-    genie::GHepParticle * hitnucl = record->HitNucleon();
-    TLorentzVector pdummy(0, 0, 0, 0);
-    const TLorentzVector & k1 = *((record->Probe())->P4());
-    const TLorentzVector & k2 = *((record->FinalStatePrimaryLepton())->P4());
-    //const TLorentzVector & p1 = (hitnucl) ? *(hitnucl->P4()) : pdummy;
-
-    double M  = genie::constants::kNucleonMass;
-    TLorentzVector q  = k1-k2;                     // q=k1-k2, 4-p transfer
-    double Q2 = -1 * q.M2();                       // momemtum transfer
-    double v  = (hitnucl) ? q.Energy()       : -1; // v (E transfer to the nucleus)
-    double x  = (hitnucl) ? 0.5*Q2/(M*v)     : -1; // Bjorken x
-    double y  = (hitnucl) ? v/k1.Energy()    : -1; // Inelasticity, y = q*P1/k1*P1
-    double W2 = (hitnucl) ? M*M + 2*M*v - Q2 : -1; // Hadronic Invariant mass ^ 2
-    double W  = (hitnucl) ? std::sqrt(W2)    : -1;
-#else
-    // The internal GENIE event kinematics are subtly different from the event
-    // kinematics that a experimentalist would calculate.
-    // Instead of retriving the genie values for these kinematic variables ,
-    // calculate them from the the final state particles
-    // while ignoring the Fermi momentum and the off-shellness of the bound nucleon.
-    // (same strategy as in gNtpConv.cxx::ConvertToGST().)
-    genie::GHepParticle * hitnucl = record->HitNucleon();
-    const TLorentzVector & k1 = *((record->Probe())->P4());
-    const TLorentzVector & k2 = *((record->FinalStatePrimaryLepton())->P4());
-
-    // also note that since most of these variables are calculated purely from the leptonic system,
-    // they have meaning reactions that didn't strike a nucleon (or even a hadron) as well.
-    TLorentzVector q  = k1-k2;      // q=k1-k2, 4-p transfer
-
-    double Q2 = -1 * q.M2();        // momemtum transfer
-    double v  = q.Energy();         // v (E transfer to the had system)
-    double y  = v/k1.Energy();      // Inelasticity, y = q*P1/k1*P1
-    double x, W2, W;
-    x = W2 = W = -1;
-
-    if ( hitnucl || procInfo.IsCoherent() ) {
-      const double M  = genie::constants::kNucleonMass;
-      // Bjorken x.
-      // Rein & Sehgal use this same formulation of x even for Coherent
-      x  = 0.5*Q2/(M*v);
-      // Hadronic Invariant mass ^ 2.
-      // ("wrong" for Coherent, but it's "experimental", so ok?)
-      W2 = M*M + 2*M*v - Q2;
-      W  = std::sqrt(W2);
-    }
-#endif
-
-    truth.SetNeutrino(CCNC,
-                      mode,
-                      itype,
-                      initState.Tgt().Pdg(),
-                      initState.Tgt().HitNucPdg(),
-                      initState.Tgt().HitQrkPdg(),
-                      W,
-                      x,
-                      y,
-                      Q2);
-    return;
-  }
-
-  //--------------------------------------------------
-  void GENIEHelper::PackGTruth(genie::EventRecord *record,
-                               simb::GTruth &truth) {
-
-    // interactions info
-    genie::Interaction *inter = record->Summary();
-    const genie::ProcessInfo  &procInfo = inter->ProcInfo();
-    truth.fGint = (int)procInfo.InteractionTypeId();
-    truth.fGscatter = (int)procInfo.ScatteringTypeId();
-
-    // Event info
-    truth.fweight = record->Weight();
-    truth.fprobability = record->Probability();
-    truth.fXsec = record->XSec();
-    truth.fDiffXsec = record->DiffXSec();
-
-    TLorentzVector vtx;
-    TLorentzVector *erVtx = record->Vertex();
-    vtx.SetXYZT(erVtx->X(), erVtx->Y(), erVtx->Z(), erVtx->T() );
-    truth.fVertex = vtx;
-
-    // true reaction information and byproducts
-    // (PRE FSI)
-    const genie::XclsTag &exclTag = inter->ExclTag();
-    truth.fIsCharm = exclTag.IsCharmEvent();
-    truth.fResNum = (int)exclTag.Resonance();
-
-    // count hadrons from the particle record.
-    // note that in principle this information could come from the XclsTag,
-    // but that object isn't completely filled for most reactions
-    //    truth.fNumPiPlus = exclTag.NPiPlus();
-    //    truth.fNumPiMinus = exclTag.NPiMinus();
-    //    truth.fNumPi0 = exclTag.NPi0();
-    //    truth.fNumProton = exclTag.NProtons();
-    //    truth.fNumNeutron = exclTag.NNucleons();
-    truth.fNumPiPlus = truth.fNumPiMinus = truth.fNumPi0 = truth.fNumProton = truth.fNumNeutron = 0;
-    for (int idx = 0; idx < record->GetEntries(); idx++) {
-      // want hadrons that are about to be sent to the FSI model
-      const genie::GHepParticle * particle = record->Particle(idx);
-      if (particle->Status() != genie::kIStHadronInTheNucleus)
-        continue;
-
-      int pdg = particle->Pdg();
-      if (pdg == genie::kPdgPi0)
-        truth.fNumPi0++;
-      else if (pdg == genie::kPdgPiP)
-        truth.fNumPiPlus++;
-      else if (pdg == genie::kPdgPiM)
-        truth.fNumPiMinus++;
-      else if (pdg == genie::kPdgNeutron)
-        truth.fNumNeutron++;
-      else if (pdg == genie::kPdgProton)
-        truth.fNumProton++;
-    } // for (idx)
-
-
-    //kinematics info
-    const genie::Kinematics &kine = inter->Kine();
-
-    truth.fgQ2 = kine.Q2(true);
-    truth.fgq2 = kine.q2(true);
-    truth.fgW = kine.W(true);
-    if ( kine.KVSet(genie::kKVSelt) ) {
-      // only get this if it is set in the Kinematics class
-      // to avoid a warning message
-      truth.fgT = kine.t(true);
-    }
-    truth.fgX = kine.x(true);
-    truth.fgY = kine.y(true);
-
-    /*
-    truth.fgQ2 = kine.Q2(false);
-    truth.fgW = kine.W(false);
-    truth.fgT = kine.t(false);
-    truth.fgX = kine.x(false);
-    truth.fgY = kine.y(false);
-    */
-    truth.fFShadSystP4 = kine.HadSystP4();
-
-    //Initial State info
-    const genie::InitialState &initState  = inter->InitState();
-    truth.fProbePDG = initState.ProbePdg();
-    truth.fProbeP4 = *initState.GetProbeP4();
-
-    //Target info
-    const genie::Target &tgt = initState.Tgt();
-    truth.fIsSeaQuark = tgt.HitSeaQrk();
-    truth.fHitNucP4 = tgt.HitNucP4();
-    truth.ftgtZ = tgt.Z();
-    truth.ftgtA = tgt.A();
-    truth.ftgtPDG = tgt.Pdg();
-
-    return;
-
-  }
-
-  //----------------------------------------------------------------------
-  void GENIEHelper::PackSimpleFlux(simb::MCFlux &flux)
-  {
-    flux.Reset();
-
-    // cast the fFluxD pointer to be of the right type
-    genie::flux::GSimpleNtpFlux *gsf = dynamic_cast<genie::flux::GSimpleNtpFlux *>(fFluxD);
-
-    // maintained variable names from gnumi ntuples
-    // see http://www.hep.utexas.edu/~zarko/wwwgnumi/v19/[/v19/output_gnumi.html]
-
-    const genie::flux::GSimpleNtpEntry* nflux_entry = gsf->GetCurrentEntry();
-    const genie::flux::GSimpleNtpNuMI*  nflux_numi  = gsf->GetCurrentNuMI();
-
-    flux.fntype  = nflux_entry->pdg;
-    flux.fnimpwt = nflux_entry->wgt;
-    flux.fdk2gen = nflux_entry->dist;
-    flux.fnenergyn = flux.fnenergyf = nflux_entry->E;
-
-    if ( nflux_numi ) {
-      flux.frun      = nflux_numi->run;
-      flux.fevtno    = nflux_numi->evtno;
-      flux.ftpx      = nflux_numi->tpx;
-      flux.ftpy      = nflux_numi->tpy;
-      flux.ftpz      = nflux_numi->tpz;
-      flux.ftptype   = nflux_numi->tptype;   // converted to PDG
-      flux.fvx       = nflux_numi->vx;
-      flux.fvy       = nflux_numi->vy;
-      flux.fvz       = nflux_numi->vz;
-
-      flux.fndecay   = nflux_numi->ndecay;
-      flux.fppmedium = nflux_numi->ppmedium;
-
-      flux.fpdpx     = nflux_numi->pdpx;
-      flux.fpdpy     = nflux_numi->pdpy;
-      flux.fpdpz     = nflux_numi->pdpz;
-
-      double apppz = nflux_numi->pppz;
-      if ( TMath::Abs(nflux_numi->pppz) < 1.0e-30 ) apppz = 1.0e-30;
-      flux.fppdxdz   = nflux_numi->pppx / apppz;
-      flux.fppdydz   = nflux_numi->pppy / apppz;
-      flux.fpppz     = nflux_numi->pppz;
-
-      flux.fptype    = nflux_numi->ptype;
-
-    }
-
-    // anything useful stuffed into vdbl or vint?
-    // need to check the metadata  auxintname, auxdblname
-
-    const genie::flux::GSimpleNtpAux*   nflux_aux  = gsf->GetCurrentAux();
-    const genie::flux::GSimpleNtpMeta*  nflux_meta  = gsf->GetCurrentMeta();
-    if ( nflux_aux && nflux_meta ) {
-
-      // references just for reducing complexity
-      const std::vector<std::string>& auxdblname = nflux_meta->auxdblname;
-      const std::vector<std::string>& auxintname = nflux_meta->auxintname;
-      const std::vector<int>&    auxint = nflux_aux->auxint;
-      const std::vector<double>& auxdbl = nflux_aux->auxdbl;
-
-      for (size_t id=0; id<auxdblname.size(); ++id) {
-        if ("muparpx"   == auxdblname[id]) flux.fmuparpx  = auxdbl[id];
-        if ("muparpy"   == auxdblname[id]) flux.fmuparpy  = auxdbl[id];
-        if ("muparpz"   == auxdblname[id]) flux.fmuparpz  = auxdbl[id];
-        if ("mupare"    == auxdblname[id]) flux.fmupare   = auxdbl[id];
-        if ("necm"      == auxdblname[id]) flux.fnecm     = auxdbl[id];
-        if ("nimpwt"    == auxdblname[id]) flux.fnimpwt   = auxdbl[id];
-        if ("fgXYWgt"   == auxdblname[id]) {
-          flux.fnwtnear = flux.fnwtfar = auxdbl[id];
-        }
-      }
-      for (size_t ii=0; ii<auxintname.size(); ++ii) {
-        if ("tgen"      == auxintname[ii]) flux.ftgen     = auxint[ii];
-        if ("tgptype"   == auxintname[ii]) flux.ftgptype  = auxint[ii];
-      }
-
-    }
-
-#define RWH_TEST
-#ifdef RWH_TEST
-    static bool first = true;
-    if (first) {
-      first = false;
-      mf::LogDebug("GENIEHelper")
-        << "GSimpleNtpMeta:\n"
-        << *nflux_meta << "\n";
-    }
-    mf::LogDebug("GENIEHelper")
-      << "simb::MCFlux:\n"
-      << flux << "\n"
-      << "GSimpleNtpFlux:\n"
-      << *nflux_entry << "\n"
-      << *nflux_numi << "\n"
-      << *nflux_aux << "\n";
-#endif
-
-    //   flux.fndxdz    = nflux.ndxdz;
-    //   flux.fndydz    = nflux.ndydz;
-    //   flux.fnpz      = nflux.npz;
-    //   flux.fnenergy  = nflux.nenergy;
-    //   flux.fndxdznea = nflux.ndxdznea;
-    //   flux.fndydznea = nflux.ndydznea;
-    //   flux.fnenergyn = nflux.nenergyn;
-    //   flux.fnwtnear  = nflux.nwtnear;
-    //   flux.fndxdzfar = nflux.ndxdzfar;
-    //   flux.fndydzfar = nflux.ndydzfar;
-    //   flux.fnenergyf = nflux.nenergyf;
-    //   flux.fnwtfar   = nflux.nwtfar;
-    //   flux.fnorig    = nflux.norig;
-    // in numi //   flux.fndecay   = nflux.ndecay;
-    //   flux.fntype    = nflux.ntype;
-    // in numi //   flux.fvx       = nflux.vx;
-    // in numi //  flux.fvy       = nflux.vy;
-    // in numi //  flux.fvz       = nflux.vz;
-    //   flux.fppenergy = nflux.ppenergy;
-    // in numi //   flux.fppmedium = nflux.ppmedium;
-    //   flux.fppvx     = nflux.ppvx;
-    //   flux.fppvy     = nflux.ppvy;
-    //   flux.fppvz     = nflux.ppvz;
-    // see above //   flux.fmuparpx  = nflux.muparpx;
-    // see above //   flux.fmuparpy  = nflux.muparpy;
-    // see above //   flux.fmuparpz  = nflux.muparpz;
-    // see above //   flux.fmupare   = nflux.mupare;
-    // see above //   flux.fnecm     = nflux.necm;
-    // see above //   flux.fnimpwt   = nflux.nimpwt;
-    //   flux.fxpoint   = nflux.xpoint;
-    //   flux.fypoint   = nflux.ypoint;
-    //   flux.fzpoint   = nflux.zpoint;
-    //   flux.ftvx      = nflux.tvx;
-    //   flux.ftvy      = nflux.tvy;
-    //   flux.ftvz      = nflux.tvz;
-    // see above //   flux.ftgen     = nflux.tgen;
-    // see above //   flux.ftgptype  = nflux.tgptype;  // converted to PDG
-    //   flux.ftgppx    = nflux.tgppx;
-    //   flux.ftgppy    = nflux.tgppy;
-    //   flux.ftgppz    = nflux.tgppz;
-    //   flux.ftprivx   = nflux.tprivx;
-    //   flux.ftprivy   = nflux.tprivy;
-    //   flux.ftprivz   = nflux.tprivz;
-    //   flux.fbeamx    = nflux.beamx;
-    //   flux.fbeamy    = nflux.beamy;
-    //   flux.fbeamz    = nflux.beamz;
-    //   flux.fbeampx   = nflux.beampx;
-    //   flux.fbeampy   = nflux.beampy;
-    //   flux.fbeampz   = nflux.beampz;
-
-    flux.fdk2gen   = gsf->GetDecayDist();
-
-    return;
   }
 
   //---------------------------------------------------------
@@ -2860,11 +2328,7 @@ namespace evgb {
       // okay they really meant it
       // PREpend "Messenger_whisper.xml" to existing value
       // don't forget the colon if necessary
-#if __GENIE_RELEASE_CODE__ >= GRELCODE(2,9,0)
       std::string newval = "Messenger_whisper.xml";
-#else
-      std::string newval = "Messenger_production.xml";
-#endif
       if ( fGENIEMsgThresholds != "" ) {
         newval += ":";
         newval += fGENIEMsgThresholds;

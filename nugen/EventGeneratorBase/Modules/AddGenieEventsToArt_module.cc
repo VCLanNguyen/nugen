@@ -175,6 +175,14 @@ namespace evg {
       Comment("GENIE Comprehensive Model Configuration (CMC/'tune') used to generate the input events for GENIE 3.0+"),
       ""
     };
+
+    Atom<bool> addGenieVtxTime {
+      Name("addGenieVtxTime"),
+      Comment("include GENIE's vertex time to MCTruth particle times"),
+        false // false = old behaviour by default
+    };
+
+
   }; // AddGenieEventsToArtParams
 }
 
@@ -622,7 +630,8 @@ void evg::AddGenieEventsToArt::produce(art::Event & evt)
     // convert to simb:: ART objects using GENIE2ART functions
     evgb::FillMCTruth(grec,vtxOffset,mctruth,
                       fParams().inputGenieVersion(),
-                      fParams().inputGenieTune());
+                      fParams().inputGenieTune(),
+                      fParams().addGenieVtxTime());
     evgb::FillGTruth(grec,gtruth);
 
     if ( fAddMCFlux ) {
