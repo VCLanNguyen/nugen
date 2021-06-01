@@ -47,6 +47,9 @@ standard_add_genie:
    # inputGenieVersion: "unknown" # GENIE version used for generating
                                   # input events (added to MCGeneratorInfo)
    # inputGenieTune: ""           # GENIE tune used for generating input evts
+
+   addGenieVtxTime:  false        # add GENIE's event vertex time to MCTruth
+                                  # false = old behaviour
 }
 
 END_PROLOG

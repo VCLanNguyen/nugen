@@ -21,7 +21,6 @@ namespace rwgt{
     double CalcWeight(const simb::MCTruth & truth, const simb::GTruth & gtruth) const;
 
   private:
-    genie::EventRecord RetrieveGHEP(const simb::MCTruth & truth, const simb::GTruth & gtruth) const;
 
   };
 
