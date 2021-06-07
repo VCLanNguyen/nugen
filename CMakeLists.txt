@@ -13,12 +13,11 @@
 #  make package (builds distribution tarfile)
 # ======================================================================
 
-cmake_minimum_required(VERSION 3.18.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-project(nugen LANGUAGES CXX)
+project(nugen 1.12.01 LANGUAGES CXX)
 
-# cetbuildtools contains our cmake modules
-find_package(cetbuildtools REQUIRED)
+find_package(cetmodules REQUIRED)
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -49,58 +48,58 @@ message(STATUS "ROOTSYS is ${ROOTSYS}")
 
 ## find_library directives
 # other dependencies
-cet_find_library( PYTHIA6 NAMES Pythia6 PATHS ENV PYLIB NO_DEFAULT_PATH )
-cet_find_library( LHAPDF NAMES LHAPDF PATHS ENV LHAPDF_LIB NO_DEFAULT_PATH )
-cet_find_library( LOG4CPP NAMES log4cpp PATHS ENV LOG4CPP_LIB NO_DEFAULT_PATH )
-cet_find_library( XML2 NAMES xml2 PATHS $ENV{LIBXML2_FQ_DIR}/lib NO_DEFAULT_PATH )
+cet_find_library( PYTHIA6 NAMES Pythia6 PATHS ENV PYLIB  )
+cet_find_library( LHAPDF NAMES LHAPDF PATHS ENV LHAPDF_LIB  )
+cet_find_library( LOG4CPP NAMES log4cpp PATHS ENV LOG4CPP_LIB  )
+cet_find_library( XML2 NAMES xml2 PATHS $ENV{LIBXML2_FQ_DIR}/lib  )
 
 # these are the POST-R-3 library names
 
-  cet_find_library( GFWMSG       NAMES GFwMsg       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWREG       NAMES GFwReg       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWALG       NAMES GFwAlg       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWINT       NAMES GFwInt       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWGHEP      NAMES GFwGHEP      PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWNUM       NAMES GFwNum       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWUTL       NAMES GFwUtl       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWPARDAT    NAMES GFwParDat    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWEG        NAMES GFwEG        PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GFWNTP       NAMES GFwNtp       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHXSIG      NAMES GPhXSIg      PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHPDF       NAMES GPhPDF       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHNUCLST    NAMES GPhNuclSt    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHCMN       NAMES GPhCmn       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHDCY       NAMES GPhDcy       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHHADTRANSP NAMES GPhHadTransp PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHHADNZ     NAMES GPhHadnz     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHDEEX      NAMES GPhDeEx      PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHAMNGXS    NAMES GPhAMNGXS    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHAMNGEG    NAMES GPhAMNGEG    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHCHMXS     NAMES GPhChmXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHCOHXS     NAMES GPhCohXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHCOHEG     NAMES GPhCohEG     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHDISXS     NAMES GPhDISXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHDISEG     NAMES GPhDISEG     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHDFRCXS    NAMES GPhDfrcXS    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHDFRCEG    NAMES GPhDfrcEG    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHGLWRESXS  NAMES GPhGlwResXS  PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHGLWRESEG  NAMES GPhGlwResEG  PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHIBDXS     NAMES GPhIBDXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHIBDEG     NAMES GPhIBDEG     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHMNUCXS    NAMES GPhMNucXS    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHMNUCEG    NAMES GPhMNucEG    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHMEL       NAMES GPhMEL       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHNUELXS    NAMES GPhNuElXS    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHNUELEG    NAMES GPhNuElEG    PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHQELXS     NAMES GPhQELXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHQELEG     NAMES GPhQELEG     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHRESXS     NAMES GPhResXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHRESEG     NAMES GPhResEG     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHSTRXS     NAMES GPhStrXS     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHSTREG     NAMES GPhStrEG     PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GPHNDCY      NAMES GPhNDcy      PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GTLGEO       NAMES GTlGeo       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GTLFLX       NAMES GTlFlx       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
+  cet_find_library( GFWMSG       NAMES GFwMsg       PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWREG       NAMES GFwReg       PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWALG       NAMES GFwAlg       PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWINT       NAMES GFwInt       PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWGHEP      NAMES GFwGHEP      PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWNUM       NAMES GFwNum       PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWUTL       NAMES GFwUtl       PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWPARDAT    NAMES GFwParDat    PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWEG        NAMES GFwEG        PATHS ENV GENIE_LIB  )
+  cet_find_library( GFWNTP       NAMES GFwNtp       PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHXSIG      NAMES GPhXSIg      PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHPDF       NAMES GPhPDF       PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHNUCLST    NAMES GPhNuclSt    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHCMN       NAMES GPhCmn       PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHDCY       NAMES GPhDcy       PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHHADTRANSP NAMES GPhHadTransp PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHHADNZ     NAMES GPhHadnz     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHDEEX      NAMES GPhDeEx      PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHAMNGXS    NAMES GPhAMNGXS    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHAMNGEG    NAMES GPhAMNGEG    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHCHMXS     NAMES GPhChmXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHCOHXS     NAMES GPhCohXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHCOHEG     NAMES GPhCohEG     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHDISXS     NAMES GPhDISXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHDISEG     NAMES GPhDISEG     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHDFRCXS    NAMES GPhDfrcXS    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHDFRCEG    NAMES GPhDfrcEG    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHGLWRESXS  NAMES GPhGlwResXS  PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHGLWRESEG  NAMES GPhGlwResEG  PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHIBDXS     NAMES GPhIBDXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHIBDEG     NAMES GPhIBDEG     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHMNUCXS    NAMES GPhMNucXS    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHMNUCEG    NAMES GPhMNucEG    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHMEL       NAMES GPhMEL       PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHNUELXS    NAMES GPhNuElXS    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHNUELEG    NAMES GPhNuElEG    PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHQELXS     NAMES GPhQELXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHQELEG     NAMES GPhQELEG     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHRESXS     NAMES GPhResXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHRESEG     NAMES GPhResEG     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHSTRXS     NAMES GPhStrXS     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHSTREG     NAMES GPhStrEG     PATHS ENV GENIE_LIB  )
+  cet_find_library( GPHNDCY      NAMES GPhNDcy      PATHS ENV GENIE_LIB  )
+  cet_find_library( GTLGEO       NAMES GTlGeo       PATHS ENV GENIE_LIB  )
+  cet_find_library( GTLFLX       NAMES GTlFlx       PATHS ENV GENIE_LIB  )
 
 #parse_ups_version( ${GENIE_VERSION} )
 #MESSAGE("--NUGEN-- GENIE_VERSION=${GENIE_VERSION} parse to ${VMAJ} ${VMIN}")
@@ -123,14 +122,14 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
   # v3_02_xx adds new required library
   # as v2 is no longer supported, then only v3_00_xx doesn't need this
 if ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
-  cet_find_library( GPHHADTENS   NAMES GPhHadTens   PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
+  cet_find_library( GPHHADTENS   NAMES GPhHadTens   PATHS ENV GENIE_LIB  )
 endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
 
   # if GENIE's Reweight gets spun into separate product
   # then the following must change for GENIE_LIB to ? GENIERW_LIB
-  cet_find_library( GRWFWK       NAMES GRwFwk       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GRWIO        NAMES GRwIO        PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-  cet_find_library( GRWCLC       NAMES GRwClc       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
+  cet_find_library( GRWFWK       NAMES GRwFwk       PATHS ENV GENIE_LIB  )
+  cet_find_library( GRWIO        NAMES GRwIO        PATHS ENV GENIE_LIB  )
+  cet_find_library( GRWCLC       NAMES GRwClc       PATHS ENV GENIE_LIB  )
 
   # GENIE pre-R-3 used GSL via ROOT's Math libs, now makes direct call not available via that route
   find_ups_product(gsl)
@@ -208,35 +207,43 @@ endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
 
 
 # dk2nu
-cet_find_library( DK2NU_TREE  NAMES dk2nuTree  PATHS ENV DK2NUDATA_LIB NO_DEFAULT_PATH )
-cet_find_library( DK2NU_GENIE NAMES dk2nuGenie PATHS ENV DK2NUGENIE_LIB NO_DEFAULT_PATH )
-include_directories( $ENV{DK2NUDATA_INC} $ENV{DK2NUGENIE_INC} )
+cet_find_library( DK2NU_TREE  NAMES dk2nuTree  PATHS  ${CMAKE_INSTALL_RPATH}  )
+cet_find_library( DK2NU_GENIE NAMES dk2nuGenie PATHS  ${CMAKE_INSTALL_RPATH}  )
+include_directories( ${DK2NUDATA_INC} ${DK2NUGENIE_INC} )
 
 # ifdhc
-cet_find_library( IFDH NAMES ifdh PATHS ENV IFDHC_LIB NO_DEFAULT_PATH )
-include_directories( $ENV{IFDHC_FQ_DIR}/inc )
+cet_find_simple_package(ifdh INCPATH_SUFFIXES inc)
+include_directories( ${IFDH_INC} )
 
 # ifdhc_art  # as a service
-cet_find_library( IFDH_SERVICE NAMES IFDH_service PATHS ENV IFDH_ART_LIB NO_DEFAULT_PATH )
-include_directories( $ENV{IFDH_ART_FQ_DIR}/inc )
+cet_find_library( IFDH_SERVICE NAMES IFDH_service PATHS  ${CMAKE_INSTALL_RPATH}  )
+include_directories( ${IFDH_ART_INC} )
 
 # macros
 include(ArtMake)
+include(ArtDictionary)
 include(BuildPlugins)
+include(CetRootCint)
 
 # include search path
-include_directories ( $ENV{GENIE_INC}/GENIE )
-include_directories ( $ENV{GENIE_REWEIGHT}/src )
-include_directories ( $ENV{LIBXML2_INC} )
-include_directories ( $ENV{LOG4CPP_INC} )
+include_directories ( ${GENIE_INC}/GENIE )
+include_directories ( ${GENIE_REWEIGHT}/src )
+include_directories ( ${LIBXML2_INC} )
+include_directories ( ${CRYHOME})
+include_directories ( ${LOG4CPP_INC} )
+
+# included for Mac OSX using XQuartz for X11
+if(APPLE)
+  include_directories ( /opt/X11/include )
+endif()
 
 # source
 add_subdirectory (nugen)
 add_subdirectory (tools)
-
+add_subdirectory(cmakeConfig)
 # ups - table and config files
-add_subdirectory(ups)
+#add_subdirectory(ups)
 
 # packaging utility
-include(UseCPack)
+#include(UseCPack)
 

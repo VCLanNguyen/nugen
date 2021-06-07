@@ -22,15 +22,13 @@ art_make( EXCLUDE EventGeneratorTest_module.cc
                         ${GENIE_LIB_LIST}
                         ${CLHEP}
                         ${DK2NU_TREE}
-                        ${ROOT_BASIC_LIB_LIST}
-                        ${ROOT_EG}
-                        ${ROOT_TREEPLAYER}
-                        ${ROOT_FFTW}
-                        ${ROOT_REFLEX}
-                        ${ROOTSYS}/lib/libEGPythia6.so
-                        ${ROOT_GUI}
+                        ${ROOT_LIBRARIES}
+                        ROOT::EG
+                        ROOT::TreePlayer
+                        ROOT::FFTW
+                        ROOT::EGPythia6
+                        ROOT::Gui
                         )
 
 install_headers()
 install_fhicl()
-install_source( EXTRAS README )
