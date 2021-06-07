@@ -5,11 +5,12 @@ art_make(
     ${PYTHIA6}
     ${LHAPDF}
     ${GENIE_LIB_LIST}
-    ${ROOT_LIBRARIES}
+    ${ROOT_BASIC_LIB_LIST}
 )
 
 install_headers()
 install_fhicl()
+install_source()
 
 add_subdirectory(art)
 
