@@ -43,4 +43,3 @@ simple_plugin( ReweightAna module nugen_NuReweight_art
 
 install_headers()
 install_fhicl()
-install_source()
