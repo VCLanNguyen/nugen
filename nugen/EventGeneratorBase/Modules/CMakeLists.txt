@@ -3,9 +3,9 @@ art_make( MODULE_LIBRARIES nusimdata_SimulationBase
                         nugen_EventGeneratorBase_GENIE
                         art_Framework_Services_Optional_RandomNumberGenerator_service
                         art_Framework_Services_Registry
-                        ${MF_MESSAGELOGGER}
-                        ${MF_UTILITIES}
-                        ${FHICLCPP}
+                        messagefacility::MFMessageLogger
+                        messagefacility::headers
+                        fhiclcpp::fhiclcpp fhiclcpp::types
                         ${CETLIB}
                         ${LOG4CPP}
                         ${XML2}
