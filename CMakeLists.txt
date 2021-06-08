@@ -209,25 +209,34 @@ endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
 # dk2nu
 cet_find_library( DK2NU_TREE  NAMES dk2nuTree  PATHS ENV DK2NUDATA_LIB  )
 cet_find_library( DK2NU_GENIE NAMES dk2nuGenie PATHS ENV DK2NUGENIE_LIB  )
-include_directories( $ENV{DK2NUDATA_INC} $ENV{DK2NUGENIE_INC} )
+
+get_filename_component(DK2NU_TREE_LIB ${DK2NU_TREE} DIRECTORY)
+get_filename_component(DK2NU_GENIE_LIB ${DK2NU_GENIE} DIRECTORY)
+include_directories( "${DK2NU_TREE_LIB}../include"  "${DK2NU_GENIE_LIB}../include" )
 
 # ifdhc
 cet_find_library( IFDH NAMES ifdh PATHS ENV IFDHC_LIB  )
-include_directories( $ENV{IFDHC_FQ_DIR}/inc )
+get_filename_component(IFDH_LIB    ${IFDH}    DIRECTORY)
+include_directories ( "${IFDH_LIB}/../inc" )
 
 # ifdhc_art  # as a service
 cet_find_library( IFDH_SERVICE NAMES IFDH_service PATHS ENV IFDH_ART_LIB  )
-include_directories( $ENV{IFDH_ART_FQ_DIR}/inc )
+get_filename_component(IFDH_SERVICE_LIB    ${IFDH_SERVICE}    DIRECTORY)
+include_directories ( "${IFDH_SERVICE_LIB}/../inc" )
 
 # macros
 include(ArtMake)
 include(BuildPlugins)
 
 # include search path
-include_directories ( $ENV{GENIE_INC}/GENIE )
-include_directories ( $ENV{GENIE_REWEIGHT}/src )
-include_directories ( $ENV{LIBXML2_INC} )
-include_directories ( $ENV{LOG4CPP_INC} )
+get_filename_component(GENIE_LIB    ${GRWCLC}    DIRECTORY)
+get_filename_component(LIBXML2_LIB    ${XML2}    DIRECTORY)
+get_filename_component(LOG4CPP_LIB    ${LOG4CPPP}    DIRECTORY)
+
+include_directories ( "${GENIE_LIB}/include/GENIE" )
+include_directories ( "${GENIE_LIB}/../Genie_Reweight/src" )
+include_directories ( "${LIBXML2_LIB}/include" )
+include_directories ( "${LOG4CPP_LIB}/include"  )
 
 # source
 add_subdirectory (nugen)
