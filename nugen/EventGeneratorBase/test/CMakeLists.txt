@@ -11,7 +11,7 @@ art_make( EXCLUDE EventGeneratorTest_module.cc
 #                        art_root_io
 #                        art_root_io_tfile_support ${ROOT_CORE}
 # end-of-list for MixGenieEvents_module
-                        messagefacility::MFMessageLogger
+                        messagefacility::MF_MessageLogger
                         messagefacility::headers
                         fhiclcpp::fhiclcpp fhiclcpp::types
                         ${CETLIB}

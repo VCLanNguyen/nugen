@@ -3,7 +3,7 @@ art_make( LIB_LIBRARIES nugen_EventGeneratorBase_GENIE
                         nusimdata_SimulationBase
                         art_Utilities
                         canvas
-                        messagefacility::MFMessageLogger
+                        messagefacility::MF_MessageLogger
                         messagefacility::headers
                         fhiclcpp::fhiclcpp fhiclcpp::types
                         ${CETLIB}

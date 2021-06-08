@@ -9,7 +9,7 @@ art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         art_Utilities
                         ${IFDH_AS_SERVICE_LIB_LIST}
                         canvas
-                        messagefacility::MFMessageLogger
+                        messagefacility::MF_MessageLogger
                         messagefacility::headers
                         fhiclcpp::fhiclcpp fhiclcpp::types
                         ${CETLIB}
