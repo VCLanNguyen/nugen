@@ -12,7 +12,7 @@ art_make( MODULE_LIBRARIES nusimdata_SimulationBase
                         ${PYTHIA6}
                         ${LHAPDF}
                         ${GENIE_LIB_LIST}
-                        ${CLHEP}
+                        
                         ${DK2NU_TREE}
                         ${ROOT_BASIC_LIB_LIST}
                         ${ROOT_MATHMORE}

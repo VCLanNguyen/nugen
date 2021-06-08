@@ -21,7 +21,7 @@ art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         ${GENIE_LIB_LIST}
                         ${DK2NU_TREE}
                         ${DK2NU_GENIE}
-                        ${CLHEP}
+                        
                         ${IFDH}
                         ${ROOT_GEOM}
                         ${ROOT_GEOMPAINTER}
