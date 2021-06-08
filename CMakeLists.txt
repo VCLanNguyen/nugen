@@ -38,7 +38,7 @@ find_ups_product( clhep )
 find_ups_product( lhapdf )
 find_ups_product( dk2nudata )
 find_ups_product( libwda )
-find_product( postgresql )
+find_package( postgresql )
 find_ups_product( nusimdata )
 find_ups_product( cetlib )
 find_ups_product( cetlib_except )
@@ -234,7 +234,9 @@ add_subdirectory (nugen)
 add_subdirectory (tools)
 
 # ups - table and config files
+if(WANT_UPS)
 add_subdirectory(ups)
+endif()
 
 # packaging utility
 include(UseCPack)
