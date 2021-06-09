@@ -216,12 +216,12 @@ include_directories( "${DK2NU_TREE_LIB}../include"  "${DK2NU_GENIE_LIB}../includ
 
 # ifdhc
 cet_find_library( IFDH NAMES ifdh PATHS ENV IFDHC_LIB  )
-get_filename_component(IFDH_LIB    ${IFDH}    DIRECTORY)
+get_filename_component(IFDH_LIB    "${IFDH}"    DIRECTORY)
 include_directories ( "${IFDH_LIB}/../inc" )
 
 # ifdhc_art  # as a service
 cet_find_library( IFDH_SERVICE NAMES IFDH_service PATHS ENV IFDH_ART_LIB  )
-get_filename_component(IFDH_SERVICE_LIB    ${IFDH_SERVICE}    DIRECTORY)
+get_filename_component(IFDH_SERVICE_LIB    "${IFDH_SERVICE}"    DIRECTORY)
 include_directories ( "${IFDH_SERVICE_LIB}/../inc" )
 
 # macros
