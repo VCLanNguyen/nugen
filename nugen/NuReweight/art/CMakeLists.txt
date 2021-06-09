@@ -2,7 +2,7 @@
 set( NURW_LIBS art::Framework_Services_Registry
                art_root_io::tfile_support ${ROOT_CORE}
                art_root_io::TFileService_service
-               art::Framwork_Core
+               art::Framework_Core
                art_Persistency_Common
                art::Framework_IO_Sources
                art_root_io::art_root_io
