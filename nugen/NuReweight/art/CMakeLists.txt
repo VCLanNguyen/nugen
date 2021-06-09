@@ -1,13 +1,13 @@
 
-set( NURW_LIBS ${ART_FRAMEWORK_SERVICES_REGISTRY}
-               ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-               ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-               ${ART_FRAMEWORK_CORE}
+set( NURW_LIBS art::Framework_Services_Registry
+               art_root_io::tfile_support ${ROOT_CORE}
+               art_root_io::TFileService_service
+               art::Framwork_Core
                art_Persistency_Common
-               ${ART_FRAMEWORK_IO_SOURCES}
-               ${ART_ROOT_IO}
-               ${ART_ROOT_IO_ROOTINPUT_SOURCE}
-               ${ART_FRAMEWORK_PRINCIPAL}
+               art::Framework_IO_Sources
+               art_root_io::art_root_io
+               art_root_io::RootInput_source
+               art::Framework_Principal
                art_Persistency_Provenance
                art_Utilities
                canvas
