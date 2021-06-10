@@ -229,9 +229,9 @@ include(ArtMake)
 include(BuildPlugins)
 
 # include search path
-get_filename_component(GENIE_LIB    ${GRWCLC}    DIRECTORY)
-get_filename_component(LIBXML2_LIB    ${XML2}    DIRECTORY)
-get_filename_component(LOG4CPP_LIB    ${LOG4CPPP}    DIRECTORY)
+get_filename_component(GENIE_LIB     "${GRWCLC}"    DIRECTORY)
+get_filename_component(LIBXML2_LIB   "${XML2}"      DIRECTORY)
+get_filename_component(LOG4CPP_LIB   "${LOG4CPP}"  DIRECTORY)
 
 include_directories ( "${GENIE_LIB}/include/GENIE" )
 include_directories ( "${GENIE_LIB}/../Genie_Reweight/src" )
