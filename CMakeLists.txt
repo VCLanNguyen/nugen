@@ -233,10 +233,10 @@ get_filename_component(GENIE_LIB     "${GRWCLC}"    DIRECTORY)
 get_filename_component(LIBXML2_LIB   "${XML2}"      DIRECTORY)
 get_filename_component(LOG4CPP_LIB   "${LOG4CPP}"  DIRECTORY)
 
-include_directories ( "${GENIE_LIB}/include/GENIE" )
+include_directories ( "${GENIE_LIB}/../include/GENIE" )
 include_directories ( "${GENIE_LIB}/../Genie_Reweight/src" )
-include_directories ( "${LIBXML2_LIB}/include" )
-include_directories ( "${LOG4CPP_LIB}/include"  )
+include_directories ( "${LIBXML2_LIB}/../include" )
+include_directories ( "${LOG4CPP_LIB}/../include"  )
 
 # source
 add_subdirectory (nugen)
