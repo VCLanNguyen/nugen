@@ -43,6 +43,9 @@ find_ups_product( postgresql )
 find_ups_product( nusimdata )
 find_ups_product( cetlib )
 find_ups_product( cetlib_except )
+find_ups_product( ifdhc )
+find_ups_product( ifdh_art )
+find_ups_product( log4cpp )
 find_ups_root()
 
 message(STATUS "ROOTSYS is ${ROOTSYS}")
@@ -120,12 +123,6 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" 0 ${GCVFIRST} VMAJ)
 string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
 #MESSAGE("--NUGEN-- GCV=${GCV} GENIE_CONFIG_VERSION=${GENIE_CONFIG_VERSION} parse to VMAJ ${VMAJ} VMIN ${VMIN} from ${GCVFIRST} ${GCVLAST} start ${GCVMINORS} len ${GCVMINORL}")
 
-  # v3_02_xx adds new required library
-  # as v2 is no longer supported, then only v3_00_xx doesn't need this
-if ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
-  cet_find_library( GPHHADTENS   NAMES GPhHadTens   PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
-endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
-
   # if GENIE's Reweight gets spun into separate product
   # then the following must change for GENIE_LIB to ? GENIERW_LIB
   cet_find_library( GRWFWK       NAMES GRwFwk       PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
@@ -151,58 +148,57 @@ endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
 #   -lGPhQELXS -lGPhQELEG -lGPhResXS -lGPhResEG -lGPhStrXS
 #   -lGPhStrEG -lGPhNDcy -lGTlGeo -lGTlFlx -lGTlRew
 
-  set (GENIE_LIB_LIST ${GFWMSG}
-                      ${GFWREG}
-                      ${GFWALG}
-                      ${GFWINT}
-                      ${GFWGHEP}
-                      ${GFWNUM}
-                      ${GSL}  # FWNUM relies on GSL
-                      ${GFWUTL}
-                      ${GFWPARDAT}
-                      ${GFWEG}
-                      ${GFWNTP}
-                      ${GPHXSIG}
-                      ${GPHPDF}
-                      ${GPHNUCLST}
-                      ${GPHCMN}
-                      ${GPHDCY}
-                      ${GPHHADTRANSP}
-                      ${GPHHADNZ}
-                      ${GPHDEEX}
-                      ${GPHAMNGXS}
-                      ${GPHAMNGEG}
-                      ${GPHCHMXS}
-                      ${GPHCOHXS}
-                      ${GPHCOHEG}
-                      ${GPHDISXS}
-                      ${GPHDISEG}
-                      ${GPHDFRCXS}
-                      ${GPHDFRCEG}
-                      ${GPHGLWRESXS}
-                      ${GPHGLWRESEG}
-                      ${GPHIBDXS}
-                      ${GPHIBDEG}
-                      ${GPHHADTENS}  ## new for v3_02_xx
-                      ${GPHMNUCXS}
-                      ${GPHMNUCEG}
-                      ${GPHMEL}
-                      ${GPHNUELXS}
-                      ${GPHNUELEG}
-                      ${GPHQELXS}
-                      ${GPHQELEG}
-                      ${GPHRESXS}
-                      ${GPHRESEG}
-                      ${GPHSTRXS}
-                      ${GPHSTREG}
-                      ${GPHNDCY}
-                      ${GTLGEO}
-                      ${GTLFLX}
-                      ${GRWFWK}
-                      ${GRWIO}
-                      ${GRWCLC}
-                      ${BLAS}
-                      ${ROOT_EGPYTHIA6}
+  set (GENIE_LIB_LIST GFWMSG
+                      GFWREG
+                      GFWALG
+                      GFWINT
+                      GFWGHEP
+                      GFWNUM
+                      GSL  # FWNUM relies on GSL
+                      GFWUTL
+                      GFWPARDAT
+                      GFWEG
+                      GFWNTP
+                      GPHXSIG
+                      GPHPDF
+                      GPHNUCLST
+                      GPHCMN
+                      GPHDCY
+                      GPHHADTRANSP
+                      GPHHADNZ
+                      GPHDEEX
+                      GPHAMNGXS
+                      GPHAMNGEG
+                      GPHCHMXS
+                      GPHCOHXS
+                      GPHCOHEG
+                      GPHDISXS
+                      GPHDISEG
+                      GPHDFRCXS
+                      GPHDFRCEG
+                      GPHGLWRESXS
+                      GPHGLWRESEG
+                      GPHIBDXS
+                      GPHIBDEG
+                      GPHMNUCXS
+                      GPHMNUCEG
+                      GPHMEL
+                      GPHNUELXS
+                      GPHNUELEG
+                      GPHQELXS
+                      GPHQELEG
+                      GPHRESXS
+                      GPHRESEG
+                      GPHSTRXS
+                      GPHSTREG
+                      GPHNDCY
+                      GTLGEO
+                      GTLFLX
+                      GRWFWK
+                      GRWIO
+                      GRWCLC
+                      BLAS
+                      ROOT_EGPYTHIA6
                       ${ROOT_EVE_LIB_LIST}
                       )
 
@@ -210,7 +206,6 @@ endif ( NOT ( ${VMAJ} EQUAL 3 AND ${VMIN} EQUAL 0 ) )
 # dk2nu
 cet_find_library( DK2NU_TREE  NAMES dk2nuTree  PATHS ENV DK2NUDATA_LIB NO_DEFAULT_PATH )
 cet_find_library( DK2NU_GENIE NAMES dk2nuGenie PATHS ENV DK2NUGENIE_LIB NO_DEFAULT_PATH )
-include_directories( $ENV{DK2NUDATA_INC} $ENV{DK2NUGENIE_INC} )
 
 # ifdhc
 cet_find_library( IFDH NAMES ifdh PATHS ENV IFDHC_LIB NO_DEFAULT_PATH )
@@ -226,9 +221,7 @@ include(BuildPlugins)
 
 # include search path
 include_directories ( $ENV{GENIE_INC}/GENIE )
-include_directories ( $ENV{GENIE_REWEIGHT}/src )
 include_directories ( $ENV{LIBXML2_INC} )
-include_directories ( $ENV{LOG4CPP_INC} )
 
 # source
 add_subdirectory (nugen)
