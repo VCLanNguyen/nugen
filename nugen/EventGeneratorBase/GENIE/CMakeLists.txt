@@ -1,7 +1,7 @@
 set( IFDH_AS_SERVICE_LIB_LIST
            art_Framework_Services_Registry
            ${Boost_SYSTEM_LIBRARY}
-           ${IFDH_SERVICE} )
+           IFDH_SERVICE )
 
 art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         art_Framework_Principal
@@ -14,15 +14,15 @@ art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         ${FHICLCPP}
                         ${CETLIB}
                         cetlib_except
-                        ${XML2}
-                        ${LOG4CPP}
-                        ${PYTHIA6}
-                        ${LHAPDF}
+                        XML2
+                        LOG4CPP
+                        PYTHIA6
+                        LHAPDF
                         ${GENIE_LIB_LIST}
-                        ${DK2NU_TREE}
-                        ${DK2NU_GENIE}
+                        DK2NU_TREE
+                        DK2NU_GENIE
                         ${CLHEP}
-                        ${IFDH}
+                        IFDH
                         ${ROOT_GEOM}
                         ${ROOT_GEOMPAINTER}
                         ${ROOT_MATHMORE}

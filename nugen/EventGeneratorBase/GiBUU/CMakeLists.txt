@@ -7,12 +7,12 @@ art_make( LIB_LIBRARIES nugen_EventGeneratorBase_GENIE
                         ${MF_UTILITIES}
                         ${FHICLCPP}
                         ${CETLIB}
-                        ${XML2}
-                        ${LOG4CPP}
-                        ${PYTHIA6}
-                        ${LHAPDF}
+                        XML2
+                        LOG4CPP
+                        PYTHIA6
+                        LHAPDF
                         ${GENIE_LIB_LIST}
-                        ${IFDH}
+                        IFDH
                         ${ROOT_GEOM}
                         ${ROOT_GEOMPAINTER}
                         ${ROOT_BASIC_LIB_LIST} )
