@@ -17,17 +17,17 @@ set( NURW_LIBS ${ART_FRAMEWORK_SERVICES_REGISTRY}
                cetlib
                cetlib_except
                nugen_EventGeneratorBase_GENIE
-               ${LOG4CPP}
-               ${XML2}
-               ${PYTHIA6}
-               ${LHAPDF}
+               LOG4CPP
+               XML2
+               PYTHIA6
+               LHAPDF
                ${GENIE_LIB_LIST}
                ${ROOT_BASIC_LIB_LIST}
                ${ROOT_EG}
                ${ROOT_TREEPLAYER}
                ${ROOT_FFTW}
                ${ROOT_REFLEX}
-               ${ROOT_EGPYTHIA6}
+               ROOT_EGPYTHIA6
                ${ROOT_GUI}
            )
 

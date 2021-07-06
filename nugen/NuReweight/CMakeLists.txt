@@ -1,9 +1,9 @@
 art_make(
   LIB_LIBRARIES
-    ${LOG4CPP}
-    ${XML2}
-    ${PYTHIA6}
-    ${LHAPDF}
+    LOG4CPP
+    XML2
+    PYTHIA6
+    LHAPDF
     ${GENIE_LIB_LIST}
     ${ROOT_BASIC_LIB_LIST}
 )
