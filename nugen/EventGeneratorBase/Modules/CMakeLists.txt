@@ -7,20 +7,20 @@ art_make( MODULE_LIBRARIES nusimdata_SimulationBase
                         ${MF_UTILITIES}
                         ${FHICLCPP}
                         ${CETLIB}
-                        ${LOG4CPP}
-                        ${XML2}
-                        ${PYTHIA6}
-                        ${LHAPDF}
+                        LOG4CPP
+                        XML2
+                        PYTHIA6
+                        LHAPDF
                         ${GENIE_LIB_LIST}
                         ${CLHEP}
-                        ${DK2NU_TREE}
+                        DK2NU_TREE
                         ${ROOT_BASIC_LIB_LIST}
                         ${ROOT_MATHMORE}
                         ${ROOT_EG}
                         ${ROOT_TREEPLAYER}
                         ${ROOT_FFTW}
                         ${ROOT_REFLEX}
-                        ${ROOTSYS}/lib/libEGPythia6.so
+                        ROOT::EGPythia6
                         ${ROOT_GUI}
                         )
 
