@@ -75,6 +75,10 @@
 
 #include "nugen/EventGeneratorBase/GENIE/EVGBAssociationUtil.h"
 
+#include "fhiclcpp/types/Atom.h"
+#include "fhiclcpp/types/Sequence.h"
+#include "fhiclcpp/types/Table.h"
+
 namespace evg {
   class AddGenieEventsToArt;
 
