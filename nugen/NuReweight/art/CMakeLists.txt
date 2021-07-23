@@ -1,21 +1,21 @@
 
-set( NURW_LIBS ${ART_FRAMEWORK_SERVICES_REGISTRY}
-               ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-               ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-               ${ART_FRAMEWORK_CORE}
-               art_Persistency_Common
-               ${ART_FRAMEWORK_IO_SOURCES}
-               ${ART_ROOT_IO}
-               ${ART_ROOT_IO_ROOTINPUT_SOURCE}
-               ${ART_FRAMEWORK_PRINCIPAL}
-               art_Persistency_Provenance
-               art_Utilities
-               canvas
-               ${MF_MESSAGELOGGER}
+set( NURW_LIBS art::Framework_Services_Registry
+               art_root_io::tfile_support ROOT::Core
+               art_root_io::TFileService_service
+               art::Framework_Core
+               art::Persistency_Common
+               art::Framework_IO_Sources
+               art_root_io::art_root_io
+               art_root_io::RootInput_source
+               art::Framework_Principal
+               art::Persistency_Provenance
+               art::Utilities
+               canvas::canvas
+               messagefacility::MF_MessageLogger
                ${MF_UTILITIES}
-               ${FHICLCPP}
-               cetlib
-               cetlib_except
+               fhiclcpp::fhiclcpp
+               cetlib::cetlib
+               cetlib_except::cetlib_except
                nugen_EventGeneratorBase_GENIE
                LOG4CPP
                XML2

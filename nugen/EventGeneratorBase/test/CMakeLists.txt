@@ -2,19 +2,19 @@
 art_make( EXCLUDE EventGeneratorTest_module.cc
           MODULE_LIBRARIES nusimdata_SimulationBase
                            nugen_EventGeneratorBase_GENIE
-                        art_Framework_Services_Optional_RandomNumberGenerator_service
-                        art_Framework_Services_Registry
+                        art::Framework_Services_Optional_RandomNumberGenerator_service
+                        art::Framework_Services_Registry
 # for MixGenieEvents_module
-#                        art_Framework_Principal
+#                        art::Framework_Principal
 #                        art_root_io_TFileService_service
-#                        art_Framework_IO_ProductMix
+#                        art::Framework_IO_ProductMix
 #                        art_root_io
-#                        art_root_io_tfile_support ${ROOT_CORE}
+#                        art_root_io_tfile_support ROOT::Core
 # end-of-list for MixGenieEvents_module
-                        ${MF_MESSAGELOGGER}
+                        messagefacility::MF_MessageLogger
                         ${MF_UTILITIES}
-                        ${FHICLCPP}
-                        ${CETLIB}
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib
                         LOG4CPP
                         XML2
                         PYTHIA6

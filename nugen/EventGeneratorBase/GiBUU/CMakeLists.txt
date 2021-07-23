@@ -1,12 +1,12 @@
 
 art_make( LIB_LIBRARIES nugen_EventGeneratorBase_GENIE
                         nusimdata_SimulationBase
-                        art_Utilities
-                        canvas
-                        ${MF_MESSAGELOGGER}
+                        art::Utilities
+                        canvas::canvas
+                        messagefacility::MF_MessageLogger
                         ${MF_UTILITIES}
-                        ${FHICLCPP}
-                        ${CETLIB}
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib
                         XML2
                         LOG4CPP
                         PYTHIA6
