@@ -1,12 +1,12 @@
 
 art_make( MODULE_LIBRARIES nusimdata_SimulationBase
                         nugen_EventGeneratorBase_GENIE
-                        art_Framework_Services_Optional_RandomNumberGenerator_service
-                        art_Framework_Services_Registry
-                        ${MF_MESSAGELOGGER}
+                        art::Framework_Services_Optional_RandomNumberGenerator_service
+                        art::Framework_Services_Registry
+                        messagefacility::MF_MessageLogger
                         ${MF_UTILITIES}
-                        ${FHICLCPP}
-                        ${CETLIB}
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib
                         LOG4CPP
                         XML2
                         PYTHIA6

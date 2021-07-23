@@ -1,19 +1,19 @@
 set( IFDH_AS_SERVICE_LIB_LIST
-           art_Framework_Services_Registry
+           art::Framework_Services_Registry
            ${Boost_SYSTEM_LIBRARY}
            IFDH_SERVICE )
 
 art_make( LIB_LIBRARIES nusimdata_SimulationBase
-                        art_Framework_Principal
-                        art_Persistency_Provenance
-                        art_Utilities
+                        art::Framework_Principal
+                        art::Persistency_Provenance
+                        art::Utilities
                         ${IFDH_AS_SERVICE_LIB_LIST}
-                        canvas
-                        ${MF_MESSAGELOGGER}
+                        canvas::canvas
+                        messagefacility::MF_MessageLogger
                         ${MF_UTILITIES}
-                        ${FHICLCPP}
-                        ${CETLIB}
-                        cetlib_except
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
                         XML2
                         LOG4CPP
                         PYTHIA6
