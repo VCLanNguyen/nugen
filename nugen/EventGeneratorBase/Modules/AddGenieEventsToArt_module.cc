@@ -6,6 +6,7 @@
 #include "art/Framework/Principal/SubRun.h"
 
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/Sequence.h"
 
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 
@@ -81,7 +82,7 @@ namespace evg {
   struct AddGenieEventsToArtParams {
     // hold/document fcl parameters
     template<class T> using Atom     = fhicl::Atom<T>;
-    template<class T> using Sequence = fhicl::Sequence<T>;
+    template<class T> using Sequence = fhicl::Sequence<T,-1ull>;
     template<class T> using Table    = fhicl::Table<T>;
     using Comment = fhicl::Comment;
     using Name    = fhicl::Name;
