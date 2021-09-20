@@ -3,14 +3,14 @@ set( IFDH_AS_SERVICE_LIB_LIST
            ${Boost_SYSTEM_LIBRARY}
            IFDH_SERVICE )
 
-art_make( LIB_LIBRARIES nusimdata_SimulationBase
+art_make( LIB_LIBRARIES nusimdata::SimulationBase
                         art::Framework_Principal
                         art::Persistency_Provenance
                         art::Utilities
                         ${IFDH_AS_SERVICE_LIB_LIST}
                         canvas::canvas
                         messagefacility::MF_MessageLogger
-                        ${MF_UTILITIES}
+                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         cetlib_except::cetlib_except
@@ -21,11 +21,11 @@ art_make( LIB_LIBRARIES nusimdata_SimulationBase
                         ${GENIE_LIB_LIST}
                         DK2NU_TREE
                         DK2NU_GENIE
-                        ${CLHEP}
+                        CLHEP
                         IFDH
-                        ${ROOT_GEOM}
-                        ${ROOT_GEOMPAINTER}
-                        ${ROOT_MATHMORE}
+                        ROOT::Geom
+                        ROOT::GeomPainter
+                        ROOT::MathMore
                         ${ROOT_BASIC_LIB_LIST} )
 
 

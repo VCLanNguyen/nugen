@@ -12,7 +12,7 @@ set( NURW_LIBS art::Framework_Services_Registry
                art::Utilities
                canvas::canvas
                messagefacility::MF_MessageLogger
-               ${MF_UTILITIES}
+               
                fhiclcpp::fhiclcpp
                cetlib::cetlib
                cetlib_except::cetlib_except
@@ -23,22 +23,22 @@ set( NURW_LIBS art::Framework_Services_Registry
                LHAPDF
                ${GENIE_LIB_LIST}
                ${ROOT_BASIC_LIB_LIST}
-               ${ROOT_EG}
-               ${ROOT_TREEPLAYER}
-               ${ROOT_FFTW}
+               ROOT::EG
+               ROOT::TreePlayer
+               ROOT::FFTW
                ${ROOT_REFLEX}
                ROOT_EGPYTHIA6
-               ${ROOT_GUI}
+               ROOT::Gui
            )
 
 art_make_library( SOURCE NuReweight.cxx
-                  LIBRARIES nusimdata_SimulationBase
+                  LIBRARIES nusimdata::SimulationBase
                             nugen_NuReweight
                             ${NURW_LIBS} )
 
 simple_plugin( ReweightAna module nugen_NuReweight_art
                                   nugen_NuReweight
-                                  nusimdata_SimulationBase
+                                  nusimdata::SimulationBase
                                  ${NURW_LIBS} )
 
 install_headers()
