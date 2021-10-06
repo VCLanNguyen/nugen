@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.18.2 FATAL_ERROR)
 
-project(nugen LANGUAGES CXX)
+project(nugen VERSION 1.14.05 LANGUAGES CXX)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
