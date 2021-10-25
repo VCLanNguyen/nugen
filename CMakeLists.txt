@@ -21,32 +21,39 @@ project(nugen VERSION 1.14.05 LANGUAGES CXX)
 include(CetCMakeEnv)
 cet_cmake_env()
 
+# Find our own CMake modules, and tell everyone else where to find them.
+cet_cmake_module_directories(Modules)
+
 cet_set_compiler_flags(DIAGS CAUTIOUS WERROR
                        NO_UNDEFINED
-                       EXTRA_FLAGS -pedantic
-                       EXTRA_CXX_FLAGS -Wno-unused-local-typedefs -Wno-variadic-macros)
+                       EXTRA_FLAGS -pedantic 
+                                   $<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-local-typedefs
+                                         -Wno-variadic-macros>)
 cet_report_compiler_flags(REPORT_THRESHOLD VERBOSE)
 
+find_package(art REQUIRED)
+find_package(art_root_io REQUIRED)
+find_package(canvas_root_io REQUIRED)
+find_package(nusimdata REQUIRED)
+find_package(cetlib REQUIRED)
+find_package(cetlib_except REQUIRED)
+find_package(CLHEP REQUIRED)
+find_package(ROOT COMPONENTS Core Physics Geom GeomPainter MathMore EG TreePlayer FFTW EGPythia6 Gui Tree REQUIRED PUBLIC)
+#find_package(GENIE REQUIRED)
+find_package(dk2nudata REQUIRED)
+find_package(dk2nugenie REQUIRED)
+find_package(PostgreSQL REQUIRED)
+find_package(ifdh_art REQUIRED)
 # these are minimum required versions, not the actual product versions
-find_ups_product( art ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product(art_root_io) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product(canvas_root_io) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 find_ups_product( genie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( dk2nugenie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( clhep ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
+#find_ups_product( dk2nugenie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 find_ups_product( lhapdf ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( dk2nudata ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( libwda ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( postgresql ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( nusimdata ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( cetlib ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( cetlib_except ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( ifdhc ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_product( ifdh_art ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
+#find_ups_product( dk2nudata ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
+#find_ups_product( libwda ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
+#find_ups_product( postgresql ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
+#find_ups_product( ifdhc ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
+#find_ups_product( ifdh_art ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 find_ups_product( log4cpp ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-find_ups_root()
-
-message(STATUS "ROOTSYS is ${ROOTSYS}")
 
 ## find_library directives
 # other dependencies
@@ -196,7 +203,7 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
                       GRWIO
                       GRWCLC
                       BLAS
-                      ROOT_EGPYTHIA6
+                      ROOT::EGPythia6
                       ${ROOT_EVE_LIB_LIST}
                       )
 
@@ -213,6 +220,8 @@ include_directories( $ENV{IFDHC_FQ_DIR}/inc ) ### MIGRATE-ACTION-RECOMMENDED: us
 cet_find_library( IFDH_SERVICE NAMES IFDH_service PATHS ENV IFDH_ART_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 include_directories( $ENV{IFDH_ART_FQ_DIR}/inc ) ### MIGRATE-ACTION-RECOMMENDED: use target_link_directories() with target semantics
 
+message(STATUS "ROOT_BASIC_LIB_LIST is ${ROOT_BASIC_LIB_LIST}")
+message(STATUS "ROOT_EVE_LIB_LIST is ${ROOT_EVE_LIB_LIST}")
 # macros
 include(ArtMake)
 include(BuildPlugins)

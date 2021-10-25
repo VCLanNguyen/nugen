@@ -4,7 +4,6 @@ art_make( MODULE_LIBRARIES nusimdata::SimulationBase ### MIGRATE-ACTION-RECOMMEN
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
                         messagefacility::MF_MessageLogger
-                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         LOG4CPP
@@ -12,14 +11,13 @@ art_make( MODULE_LIBRARIES nusimdata::SimulationBase ### MIGRATE-ACTION-RECOMMEN
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
-                        CLHEP
-                        DK2NU_TREE
-                        ${ROOT_BASIC_LIB_LIST}
+                        CLHEP::CLHEP
+                        dk2nu::Tree
+                        ROOT::Core
                         ROOT::MathMore
                         ROOT::EG
                         ROOT::TreePlayer
                         ROOT::FFTW
-                        ${ROOT_REFLEX}
                         ROOT::EGPythia6
                         ROOT::Gui
                         )

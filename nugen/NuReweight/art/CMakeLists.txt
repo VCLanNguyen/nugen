@@ -22,12 +22,11 @@ set( NURW_LIBS art::Framework_Services_Registry
                PYTHIA6
                LHAPDF
                ${GENIE_LIB_LIST}
-               ${ROOT_BASIC_LIB_LIST}
+               ROOT::Core
                ROOT::EG
                ROOT::TreePlayer
                ROOT::FFTW
-               ${ROOT_REFLEX}
-               ROOT_EGPYTHIA6
+               ROOT::EGPythia6
                ROOT::Gui
            )
 

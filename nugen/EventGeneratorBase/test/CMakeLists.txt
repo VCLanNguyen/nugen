@@ -12,7 +12,6 @@ art_make( EXCLUDE EventGeneratorTest_module.cc ### MIGRATE-ACTION-RECOMMENDED: u
 #                        art_root_io_tfile_support ROOT::Core
 # end-of-list for MixGenieEvents_module
                         messagefacility::MF_MessageLogger
-                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         LOG4CPP
@@ -20,13 +19,12 @@ art_make( EXCLUDE EventGeneratorTest_module.cc ### MIGRATE-ACTION-RECOMMENDED: u
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
-                        CLHEP
-                        DK2NU_TREE
-                        ${ROOT_BASIC_LIB_LIST}
+                        CLHEP::CLHEP
+                        dk2nu::Tree
+                        ROOT::Core
                         ROOT::EG
                         ROOT::TreePlayer
                         ROOT::FFTW
-                        ${ROOT_REFLEX}
                         ROOT::EGPythia6
                         ROOT::Gui
                         )

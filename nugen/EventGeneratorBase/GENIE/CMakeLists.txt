@@ -10,7 +10,6 @@ art_make( LIB_LIBRARIES nusimdata::SimulationBase ### MIGRATE-ACTION-RECOMMENDED
                         ${IFDH_AS_SERVICE_LIB_LIST}
                         canvas::canvas
                         messagefacility::MF_MessageLogger
-                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         cetlib_except::cetlib_except
@@ -19,14 +18,14 @@ art_make( LIB_LIBRARIES nusimdata::SimulationBase ### MIGRATE-ACTION-RECOMMENDED
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
-                        DK2NU_TREE
-                        DK2NU_GENIE
-                        CLHEP
+                        dk2nu::Tree
+                        dk2nu::Genie
+                        CLHEP::CLHEP
                         IFDH
                         ROOT::Geom
                         ROOT::GeomPainter
                         ROOT::MathMore
-                        ${ROOT_BASIC_LIB_LIST} )
+                        ROOT::Core )
 
 
 install_headers()
