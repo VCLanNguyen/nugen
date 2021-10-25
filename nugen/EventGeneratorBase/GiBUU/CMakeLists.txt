@@ -11,7 +11,7 @@ art_make( LIB_LIBRARIES nugen_EventGeneratorBase_GENIE ### MIGRATE-ACTION-RECOMM
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
-                        IFDH
+                        ifdh::ifdh
                         ROOT::Geom
                         ROOT::GeomPainter
                         ROOT::Core )

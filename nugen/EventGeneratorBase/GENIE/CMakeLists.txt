@@ -1,13 +1,10 @@
-set( IFDH_AS_SERVICE_LIB_LIST
-           art::Framework_Services_Registry
-           ${Boost_SYSTEM_LIBRARY}
-           IFDH_SERVICE )
 
 art_make( LIB_LIBRARIES nusimdata::SimulationBase ### MIGRATE-ACTION-RECOMMENDED: use art_make_library(), art_dictionary(), simple_plugin() with explicit source lists
                         art::Framework_Principal
                         art::Persistency_Provenance
                         art::Utilities
-                        ${IFDH_AS_SERVICE_LIB_LIST}
+                        art::Framework_Services_Registry
+                        ifdh_art::IFDH_service
                         canvas::canvas
                         messagefacility::MF_MessageLogger
                         fhiclcpp::fhiclcpp
@@ -21,7 +18,7 @@ art_make( LIB_LIBRARIES nusimdata::SimulationBase ### MIGRATE-ACTION-RECOMMENDED
                         dk2nu::Tree
                         dk2nu::Genie
                         CLHEP::CLHEP
-                        IFDH
+                        ifdh::ifdh
                         ROOT::Geom
                         ROOT::GeomPainter
                         ROOT::MathMore

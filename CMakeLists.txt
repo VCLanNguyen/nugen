@@ -43,16 +43,12 @@ find_package(ROOT COMPONENTS Core Physics Geom GeomPainter MathMore EG TreePlaye
 find_package(dk2nudata REQUIRED)
 find_package(dk2nugenie REQUIRED)
 find_package(PostgreSQL REQUIRED)
+find_package(ifdhc REQUIRED)
 find_package(ifdh_art REQUIRED)
 # these are minimum required versions, not the actual product versions
 find_ups_product( genie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-#find_ups_product( dk2nugenie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 find_ups_product( lhapdf ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-#find_ups_product( dk2nudata ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 #find_ups_product( libwda ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-#find_ups_product( postgresql ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-#find_ups_product( ifdhc ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-#find_ups_product( ifdh_art ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 find_ups_product( log4cpp ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 
 ## find_library directives
@@ -207,21 +203,6 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
                       ${ROOT_EVE_LIB_LIST}
                       )
 
-
-# dk2nu
-cet_find_library( DK2NU_TREE  NAMES dk2nuTree  PATHS ENV DK2NUDATA_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-cet_find_library( DK2NU_GENIE NAMES dk2nuGenie PATHS ENV DK2NUGENIE_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-
-# ifdhc
-cet_find_library( IFDH NAMES ifdh PATHS ENV IFDHC_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-include_directories( $ENV{IFDHC_FQ_DIR}/inc ) ### MIGRATE-ACTION-RECOMMENDED: use target_link_directories() with target semantics
-
-# ifdhc_art  # as a service
-cet_find_library( IFDH_SERVICE NAMES IFDH_service PATHS ENV IFDH_ART_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-include_directories( $ENV{IFDH_ART_FQ_DIR}/inc ) ### MIGRATE-ACTION-RECOMMENDED: use target_link_directories() with target semantics
-
-message(STATUS "ROOT_BASIC_LIB_LIST is ${ROOT_BASIC_LIB_LIST}")
-message(STATUS "ROOT_EVE_LIB_LIST is ${ROOT_EVE_LIB_LIST}")
 # macros
 include(ArtMake)
 include(BuildPlugins)
