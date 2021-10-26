@@ -7,7 +7,7 @@ cet_build_plugin(AddGenieEventsToArt art::module
                         messagefacility::MF_MessageLogger
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
-                        LOG4CPP
+                        log4cpp::log4cpp
                         XML2
                         PYTHIA6
                         LHAPDF
@@ -32,7 +32,7 @@ cet_build_plugin(GenieOutput art::module
                         messagefacility::MF_MessageLogger
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
-                        LOG4CPP
+                        log4cpp::log4cpp
                         XML2
                         PYTHIA6
                         LHAPDF
@@ -57,7 +57,7 @@ cet_build_plugin(TestGENIEHelper art::module
                         messagefacility::MF_MessageLogger
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
-                        LOG4CPP
+                        log4cpp::log4cpp
                         XML2
                         PYTHIA6
                         LHAPDF

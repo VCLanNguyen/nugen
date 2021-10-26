@@ -7,7 +7,7 @@ art_make_library(LIBRARIES PRIVATE nugen_EventGeneratorBase_GENIE
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         XML2
-                        LOG4CPP
+                        log4cpp::log4cpp
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}

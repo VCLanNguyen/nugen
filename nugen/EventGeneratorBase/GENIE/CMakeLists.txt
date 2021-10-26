@@ -11,7 +11,7 @@ art_make_library( LIBRARIES PRIVATE nusimdata::SimulationBase
                         cetlib::cetlib
                         cetlib_except::cetlib_except
                         XML2
-                        LOG4CPP
+                        log4cpp::log4cpp
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
