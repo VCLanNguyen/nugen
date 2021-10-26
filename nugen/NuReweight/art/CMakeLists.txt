@@ -12,7 +12,6 @@ set( NURW_LIBS art::Framework_Services_Registry
                art::Utilities
                canvas::canvas
                messagefacility::MF_MessageLogger
-               
                fhiclcpp::fhiclcpp
                cetlib::cetlib
                cetlib_except::cetlib_except
@@ -35,10 +34,11 @@ art_make_library( SOURCE NuReweight.cxx
                             nugen_NuReweight
                             ${NURW_LIBS} )
 
-simple_plugin( ReweightAna module nugen_NuReweight_art
-                                  nugen_NuReweight
-                                  nusimdata::SimulationBase
-                                 ${NURW_LIBS} )
+cet_build_plugin( ReweightAna art::module
+                  LIBRARIES nugen_NuReweight_art
+                            nugen_NuReweight
+                            nusimdata::SimulationBase
+                            ${NURW_LIBS} )
 
 install_headers()
 install_fhicl()

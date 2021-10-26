@@ -1,5 +1,5 @@
 
-art_make( LIB_LIBRARIES nugen_EventGeneratorBase_GENIE ### MIGRATE-ACTION-RECOMMENDED: use art_make_library(), art_dictionary(), simple_plugin() with explicit source lists
+art_make_library(LIBARIES nugen_EventGeneratorBase_GENIE
                         nusimdata::SimulationBase
                         art::Utilities
                         canvas::canvas

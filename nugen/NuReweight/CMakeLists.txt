@@ -1,5 +1,5 @@
-art_make( ### MIGRATE-ACTION-RECOMMENDED: use art_make_library(), art_dictionary(), simple_plugin() with explicit source lists
-  LIB_LIBRARIES
+art_make_library(
+  LIBRARIES
     LOG4CPP
     XML2
     PYTHIA6
