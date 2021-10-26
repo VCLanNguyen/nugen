@@ -17,7 +17,7 @@ art_make( EXCLUDE EventGeneratorTest_module.cc ### MIGRATE-ACTION-RECOMMENDED: u
                         log4cpp::log4cpp
                         XML2
                         PYTHIA6
-                        LHAPDF
+                        LHAPDF::LHAPDF
                         ${GENIE_LIB_LIST}
                         GSL::gsl  # FWNUM relies on GSL
                         BLAS::BLAS

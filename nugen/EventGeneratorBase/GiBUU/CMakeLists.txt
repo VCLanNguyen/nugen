@@ -9,7 +9,7 @@ art_make_library(LIBRARIES PRIVATE nugen_EventGeneratorBase_GENIE
                         XML2
                         log4cpp::log4cpp
                         PYTHIA6
-                        LHAPDF
+                        LHAPDF::LHAPDF
                         ${GENIE_LIB_LIST}
                         GSL::gsl  # FWNUM relies on GSL
                         BLAS::BLAS
