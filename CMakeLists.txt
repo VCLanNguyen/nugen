@@ -38,7 +38,7 @@ find_package(nusimdata REQUIRED)
 find_package(cetlib REQUIRED)
 find_package(cetlib_except REQUIRED)
 find_package(CLHEP REQUIRED)
-find_package(ROOT COMPONENTS Core Physics Geom GeomPainter MathMore EG TreePlayer FFTW EGPythia6 Gui Tree REQUIRED PUBLIC)
+find_package(ROOT COMPONENTS Core Physics Geom GeomPainter MathMore EG TreePlayer FFTW EGPythia6 Gui Tree REQUIRED)
 #find_package(GENIE REQUIRED)
 find_package(dk2nudata REQUIRED)
 find_package(dk2nugenie REQUIRED)
@@ -199,8 +199,6 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
                       GRWIO
                       GRWCLC
                       BLAS
-                      ROOT::EGPythia6
-                      ${ROOT_EVE_LIB_LIST}
                       )
 
 # macros

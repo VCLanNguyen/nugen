@@ -1,5 +1,5 @@
 
-art_make_library( LIBRARIES nusimdata::SimulationBase
+art_make_library( LIBRARIES PRIVATE nusimdata::SimulationBase
                         art::Framework_Principal
                         art::Persistency_Provenance
                         art::Utilities
@@ -15,6 +15,8 @@ art_make_library( LIBRARIES nusimdata::SimulationBase
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                         dk2nu::Tree
                         dk2nu::Genie
                         CLHEP::CLHEP

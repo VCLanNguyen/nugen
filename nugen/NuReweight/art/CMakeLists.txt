@@ -21,6 +21,8 @@ set( NURW_LIBS art::Framework_Services_Registry
                PYTHIA6
                LHAPDF
                ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                ROOT::Core
                ROOT::EG
                ROOT::TreePlayer
@@ -30,12 +32,12 @@ set( NURW_LIBS art::Framework_Services_Registry
            )
 
 art_make_library( SOURCE NuReweight.cxx
-                  LIBRARIES nusimdata::SimulationBase
+                  LIBRARIES PRIVATE nusimdata::SimulationBase
                             nugen_NuReweight
                             ${NURW_LIBS} )
 
 cet_build_plugin( ReweightAna art::module
-                  LIBRARIES nugen_NuReweight_art
+                  LIBRARIES PRIVATE nugen_NuReweight_art
                             nugen_NuReweight
                             nusimdata::SimulationBase
                             ${NURW_LIBS} )

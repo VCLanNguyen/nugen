@@ -1,5 +1,5 @@
 
-art_make_library(LIBARIES nugen_EventGeneratorBase_GENIE
+art_make_library(LIBRARIES PRIVATE nugen_EventGeneratorBase_GENIE
                         nusimdata::SimulationBase
                         art::Utilities
                         canvas::canvas
@@ -11,6 +11,8 @@ art_make_library(LIBARIES nugen_EventGeneratorBase_GENIE
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                         ifdh::ifdh
                         ROOT::Geom
                         ROOT::GeomPainter

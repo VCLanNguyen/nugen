@@ -1,6 +1,6 @@
 
 cet_build_plugin(AddGenieEventsToArt art::module
-                 LIBRARIES nusimdata::SimulationBase
+                 LIBRARIES REG nusimdata::SimulationBase
                         nugen_EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
@@ -12,6 +12,8 @@ cet_build_plugin(AddGenieEventsToArt art::module
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
                         dk2nu::Tree
                         ROOT::Core
@@ -23,7 +25,7 @@ cet_build_plugin(AddGenieEventsToArt art::module
                         ROOT::Gui
                         )
 cet_build_plugin(GenieOutput art::module
-                 LIBRARIES nusimdata::SimulationBase
+                 LIBRARIES REG nusimdata::SimulationBase
                         nugen_EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
@@ -35,6 +37,8 @@ cet_build_plugin(GenieOutput art::module
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
                         dk2nu::Tree
                         ROOT::Core
@@ -46,7 +50,7 @@ cet_build_plugin(GenieOutput art::module
                         ROOT::Gui
                         )
 cet_build_plugin(TestGENIEHelper art::module
-                 LIBRARIES nusimdata::SimulationBase
+                 LIBRARIES REG nusimdata::SimulationBase
                         nugen_EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
@@ -58,9 +62,14 @@ cet_build_plugin(TestGENIEHelper art::module
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
                         dk2nu::Tree
+                        dk2nu::Genie
                         ROOT::Core
+                        ROOT::Geom
+                        ROOT::GeomPainter
                         ROOT::MathMore
                         ROOT::EG
                         ROOT::TreePlayer

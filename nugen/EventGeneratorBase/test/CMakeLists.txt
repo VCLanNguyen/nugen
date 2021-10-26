@@ -19,6 +19,8 @@ art_make( EXCLUDE EventGeneratorTest_module.cc ### MIGRATE-ACTION-RECOMMENDED: u
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
                         dk2nu::Tree
                         ROOT::Core
