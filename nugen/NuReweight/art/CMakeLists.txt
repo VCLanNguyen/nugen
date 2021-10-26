@@ -21,6 +21,8 @@ set( NURW_LIBS art::Framework_Services_Registry
                PYTHIA6
                LHAPDF
                ${GENIE_LIB_LIST}
+               GSL::gsl  # FWNUM relies on GSL
+               BLAS::BLAS
                ROOT::EGPythia6
                ${ROOT_EVE_LIB_LIST}
                ROOT::Core

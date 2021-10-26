@@ -46,6 +46,9 @@ find_package(PostgreSQL REQUIRED)
 find_package(ifdhc REQUIRED)
 find_package(ifdh_art REQUIRED)
 find_package(log4cpp REQUIRED)
+find_package(GSL REQUIRED)
+find_package(BLAS REQUIRED)
+
 # these are minimum required versions, not the actual product versions
 find_ups_product( genie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 find_ups_product( lhapdf ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
@@ -129,15 +132,6 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
   cet_find_library( GRWIO        NAMES GRwIO        PATHS ENV GENIE_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
   cet_find_library( GRWCLC       NAMES GRwClc       PATHS ENV GENIE_LIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 
-  # GENIE pre-R-3 used GSL via ROOT's Math libs, now makes direct call not available via that route
-  find_ups_product(gsl) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-  cet_find_package(BLAS)
-  if (BLAS_FOUND)
-    set(BLAS ${BLAS_LIBRARIES})
-  else()
-    set(BLAS GSL::gslcblas)
-  endif()
-
 # this is the order that GENIE "recommends"
 # genie-config --libs
 #   -lGFwMsg -lGFwReg -lGFwAlg -lGFwInt -lGFwGHEP -lGFwNum -lGFwUtl -lGFwParDat
@@ -154,7 +148,6 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
                       GFWINT
                       GFWGHEP
                       GFWNUM
-                      GSL  # FWNUM relies on GSL
                       GFWUTL
                       GFWPARDAT
                       GFWEG
@@ -197,7 +190,6 @@ string(SUBSTRING "${GENIE_CONFIG_VERSION}" ${GCVMINORS} ${GCVMINORL} VMIN)
                       GRWFWK
                       GRWIO
                       GRWCLC
-                      BLAS
                       )
 
 # macros

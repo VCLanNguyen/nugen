@@ -12,6 +12,8 @@ cet_build_plugin(AddGenieEventsToArt art::module
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        GSL::gsl  # FWNUM relies on GSL
+                        BLAS::BLAS
                         ROOT::EGPythia6
                         ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
@@ -37,6 +39,8 @@ cet_build_plugin(GenieOutput art::module
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        GSL::gsl  # FWNUM relies on GSL
+                        BLAS::BLAS
                         ROOT::EGPythia6
                         ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
@@ -62,6 +66,8 @@ cet_build_plugin(TestGENIEHelper art::module
                         PYTHIA6
                         LHAPDF
                         ${GENIE_LIB_LIST}
+                        GSL::gsl  # FWNUM relies on GSL
+                        BLAS::BLAS
                         ROOT::EGPythia6
                         ${ROOT_EVE_LIB_LIST}
                         CLHEP::CLHEP
