@@ -42,8 +42,8 @@ find_package(ROOT COMPONENTS Core Physics Geom GeomPainter MathMore EG TreePlaye
 find_package(dk2nudata REQUIRED)
 find_package(dk2nugenie REQUIRED)
 find_package(PostgreSQL REQUIRED)
-find_package(ifdhc REQUIRED)
 find_package(ifdh_art REQUIRED)
+find_package(ifdhc REQUIRED)
 find_package(log4cpp REQUIRED)
 find_package(GSL REQUIRED)
 find_package(BLAS REQUIRED)
@@ -69,6 +69,7 @@ include(BuildPlugins)
 # source
 add_subdirectory (nugen)
 add_subdirectory (tools)
+add_subdirectory (Modules)
 
 # ups - table and config files
 
