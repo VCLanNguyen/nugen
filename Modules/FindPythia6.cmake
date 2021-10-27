@@ -15,7 +15,7 @@ This module provides the following imported targets, if found:
 
 #]================================================================]
 # headers
-find_file(_cet_main60_f NAMES main60.f HINTS ENV LOG4CPP_INC
+find_file(_cet_main60_f NAMES main60.f HINTS ENV PYTHIA_INC
   PATH_SUFFIXES Pythia6)
 if (_cet_main60_f)
   get_filename_component(_cet_Pythia6_include_dir "${_cet_main60_f}" PATH)
@@ -30,7 +30,7 @@ if (EXISTS "${_cet_Pythia6_include_dir}")
     unset(_cet_Pythia6_dir)
   endif()
   set(Pythia6_INCLUDE_DIRS "${_cet_Pythia6_include_dir}")
-  set(Pythia6_LIBRARY_DIR "${_cet_Pythia6_dir}/lib}")
+  set(Pythia6_LIBRARY_DIR "${_cet_Pythia6_dir}/lib")
 endif()
 if (Pythia6_FOUND)
   find_library(Pythia6_LIBRARY NAMES Pythia6 PATHS ${Pythia6_LIBRARY_DIR})
