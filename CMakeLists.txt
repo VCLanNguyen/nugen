@@ -52,9 +52,6 @@ find_package(LibXml2 REQUIRED)
 find_package(Pythia6 REQUIRED)
 find_package(GENIE REQUIRED)
 
-# include search path
-include_directories ( $ENV{GENIE_INC}/GENIE ) ### MIGRATE-ACTION-RECOMMENDED: use target_link_directories() with target semantics
-
 # this is the order that GENIE "recommends"
 # genie-config --libs
 #   -lGFwMsg -lGFwReg -lGFwAlg -lGFwInt -lGFwGHEP -lGFwNum -lGFwUtl -lGFwParDat
