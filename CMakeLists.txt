@@ -50,14 +50,13 @@ find_package(GSL REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LHAPDF REQUIRED)
 find_package(LibXml2 REQUIRED)
+find_package(Pythia6 REQUIRED)
 
 # these are minimum required versions, not the actual product versions
 find_ups_product( genie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 #find_ups_product( libwda ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 
 ## find_library directives
-# other dependencies
-cet_find_library( PYTHIA6 NAMES Pythia6 PATHS ENV PYLIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 
 # these are the POST-R-3 library names
 

@@ -8,7 +8,7 @@ art_make_library(LIBRARIES PRIVATE nugen_EventGeneratorBase_GENIE
                         cetlib::cetlib
                         LibXml2::LibXml2
                         log4cpp::log4cpp
-                        PYTHIA6
+                        Pythia6::Pythia6
                         LHAPDF::LHAPDF
                         ${GENIE_LIB_LIST}
                         GSL::gsl  # FWNUM relies on GSL
