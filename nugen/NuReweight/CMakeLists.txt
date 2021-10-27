@@ -2,7 +2,7 @@
 art_make_library(
   LIBRARIES PRIVATE
     log4cpp::log4cpp
-    XML2
+    LibXml2::LibXml2
     PYTHIA6
     LHAPDF::LHAPDF
     ${GENIE_LIB_LIST}

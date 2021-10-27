@@ -49,6 +49,7 @@ find_package(log4cpp REQUIRED)
 find_package(GSL REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LHAPDF REQUIRED)
+find_package(LibXml2 REQUIRED)
 
 # these are minimum required versions, not the actual product versions
 find_ups_product( genie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
@@ -57,7 +58,6 @@ find_ups_product( genie ) ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package()
 ## find_library directives
 # other dependencies
 cet_find_library( PYTHIA6 NAMES Pythia6 PATHS ENV PYLIB NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
-cet_find_library( XML2 NAMES xml2 PATHS ENV LIBXML2_FQ_DIR PATH_SUFFIXES lib NO_DEFAULT_PATH ) ### MIGRATE-ACTION-RECOMMENDED: use of ENV ... may be UPS-dependent ### MIGRATE-ACTION-RECOMMENDED: use cet_find_package() with target semantics for linking
 
 # these are the POST-R-3 library names
 
@@ -197,7 +197,6 @@ include(BuildPlugins)
 
 # include search path
 include_directories ( $ENV{GENIE_INC}/GENIE ) ### MIGRATE-ACTION-RECOMMENDED: use target_link_directories() with target semantics
-include_directories ( $ENV{LIBXML2_INC} ) ### MIGRATE-ACTION-RECOMMENDED: use target_link_directories() with target semantics
 
 # source
 add_subdirectory (nugen)

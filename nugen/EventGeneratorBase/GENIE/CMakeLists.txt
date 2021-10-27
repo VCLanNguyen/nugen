@@ -10,7 +10,7 @@ art_make_library( LIBRARIES PRIVATE nusimdata::SimulationBase
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         cetlib_except::cetlib_except
-                        XML2
+                        LibXml2::LibXml2
                         log4cpp::log4cpp
                         PYTHIA6
                         LHAPDF::LHAPDF

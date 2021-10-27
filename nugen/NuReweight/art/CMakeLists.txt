@@ -17,7 +17,7 @@ set( NURW_LIBS art::Framework_Services_Registry
                cetlib_except::cetlib_except
                nugen_EventGeneratorBase_GENIE
                log4cpp::log4cpp
-               XML2
+               LibXml2::LibXml2
                PYTHIA6
                LHAPDF::LHAPDF
                ${GENIE_LIB_LIST}
