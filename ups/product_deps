@@ -311,8 +311,6 @@ end_product_list
 qualifier	nusimdata	art_root_io	dk2nugenie	ifdh_art	notes
 c7:debug	c7:debug	c7:debug	c7:debug	c7:debug
 c7:prof		c7:prof		c7:prof		c7:prof		c7:prof
-e19:debug	e19:debug	e19:debug	e19:debug	e19:debug
-e19:prof	e19:prof	e19:prof	e19:prof	e19:prof
 e20:debug	e20:debug	e20:debug	e20:debug	e20:debug
 e20:prof	e20:prof	e20:prof	e20:prof	e20:prof
 end_qualifier_list
