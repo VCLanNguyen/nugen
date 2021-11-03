@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
 
 find_package(cetmodules 2.29.06 REQUIRED)
-project(nugen VERSION 1.14.05 LANGUAGES CXX)
+project(nugen VERSION 1.15.00 LANGUAGES CXX)
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -43,7 +43,6 @@ find_package(dk2nudata REQUIRED)
 find_package(dk2nugenie REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(ifdh_art REQUIRED)
-find_package(ifdhc REQUIRED)
 find_package(log4cpp REQUIRED)
 find_package(GSL REQUIRED)
 find_package(BLAS REQUIRED)
@@ -51,16 +50,6 @@ find_package(LHAPDF REQUIRED)
 find_package(LibXml2 REQUIRED)
 find_package(Pythia6 REQUIRED)
 find_package(GENIE REQUIRED)
-
-# this is the order that GENIE "recommends"
-# genie-config --libs
-#   -lGFwMsg -lGFwReg -lGFwAlg -lGFwInt -lGFwGHEP -lGFwNum -lGFwUtl -lGFwParDat
-#   -lGFwEG -lGFwNtp -lGPhXSIg -lGPhPDF -lGPhNuclSt -lGPhCmn -lGPhDcy -lGPhHadTransp
-#   -lGPhHadnz -lGPhDeEx -lGPhAMNGXS -lGPhAMNGEG -lGPhChmXS -lGPhCohXS -lGPhCohEG
-#   -lGPhDISXS -lGPhDISEG -lGPhDfrcXS -lGPhDfrcEG -lGPhGlwResXS -lGPhGlwResEG
-#   -lGPhIBDXS -lGPhIBDEG -lGPhMNucXS -lGPhMNucEG -lGPhMEL -lGPhNuElXS -lGPhNuElEG
-#   -lGPhQELXS -lGPhQELEG -lGPhResXS -lGPhResEG -lGPhStrXS
-#   -lGPhStrEG -lGPhNDcy -lGTlGeo -lGTlFlx -lGTlRew
 
 # macros
 include(ArtMake)
