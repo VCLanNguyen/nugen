@@ -1,5 +1,5 @@
 
-art_make_library(LIBRARIES PRIVATE nugen_EventGeneratorBase_GENIE
+art_make_library(LIBRARIES PRIVATE nugen::EventGeneratorBase_GENIE
                         nusimdata::SimulationBase
                         art::Utilities
                         canvas::canvas

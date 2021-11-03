@@ -15,7 +15,7 @@ set( NURW_LIBS art::Framework_Services_Registry
                fhiclcpp::fhiclcpp
                cetlib::cetlib
                cetlib_except::cetlib_except
-               nugen_EventGeneratorBase_GENIE
+               nugen::EventGeneratorBase_GENIE
                log4cpp::log4cpp
                LibXml2::LibXml2
                Pythia6::Pythia6
@@ -35,12 +35,12 @@ set( NURW_LIBS art::Framework_Services_Registry
 
 art_make_library( SOURCE NuReweight.cxx
                   LIBRARIES PRIVATE nusimdata::SimulationBase
-                            nugen_NuReweight
+                            nugen::NuReweight
                             ${NURW_LIBS} )
 
 cet_build_plugin( ReweightAna art::module
-                  LIBRARIES PRIVATE nugen_NuReweight_art
-                            nugen_NuReweight
+                  LIBRARIES PRIVATE nugen::NuReweight_art
+                            nugen::NuReweight
                             nusimdata::SimulationBase
                             ${NURW_LIBS} )
 

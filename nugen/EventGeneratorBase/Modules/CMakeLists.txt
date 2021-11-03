@@ -1,7 +1,7 @@
 
 cet_build_plugin(AddGenieEventsToArt art::module
                  LIBRARIES REG nusimdata::SimulationBase
-                        nugen_EventGeneratorBase_GENIE
+                        nugen::EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
                         messagefacility::MF_MessageLogger
@@ -28,7 +28,7 @@ cet_build_plugin(AddGenieEventsToArt art::module
                         )
 cet_build_plugin(GenieOutput art::module
                  LIBRARIES REG nusimdata::SimulationBase
-                        nugen_EventGeneratorBase_GENIE
+                        nugen::EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
                         messagefacility::MF_MessageLogger
@@ -55,7 +55,7 @@ cet_build_plugin(GenieOutput art::module
                         )
 cet_build_plugin(TestGENIEHelper art::module
                  LIBRARIES REG nusimdata::SimulationBase
-                        nugen_EventGeneratorBase_GENIE
+                        nugen::EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
                         messagefacility::MF_MessageLogger

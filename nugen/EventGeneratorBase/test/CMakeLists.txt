@@ -1,7 +1,7 @@
 
 art_make( EXCLUDE EventGeneratorTest_module.cc ### MIGRATE-ACTION-RECOMMENDED: use art_make_library(), art_dictionary(), simple_plugin() with explicit source lists
           MODULE_LIBRARIES nusimdata::SimulationBase
-                           nugen_EventGeneratorBase_GENIE
+                           nugen::EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
 # for MixGenieEvents_module
