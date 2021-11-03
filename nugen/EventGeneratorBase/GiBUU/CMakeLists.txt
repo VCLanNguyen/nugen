@@ -1,21 +1,24 @@
 
-art_make( LIB_LIBRARIES nugen_EventGeneratorBase_GENIE
+art_make_library(LIBRARIES PRIVATE nugen::EventGeneratorBase_GENIE
                         nusimdata::SimulationBase
                         art::Utilities
                         canvas::canvas
                         messagefacility::MF_MessageLogger
-                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
-                        XML2
-                        LOG4CPP
-                        PYTHIA6
-                        LHAPDF
+                        LibXml2::LibXml2
+                        log4cpp::log4cpp
+                        Pythia6::Pythia6
+                        LHAPDF::LHAPDF
                         ${GENIE_LIB_LIST}
-                        IFDH
+                        GSL::gsl  # FWNUM relies on GSL
+                        BLAS::BLAS
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
+                        ifdh::ifdh
                         ROOT::Geom
                         ROOT::GeomPainter
-                        ${ROOT_BASIC_LIB_LIST} )
+                        ROOT::Core )
 
 install_headers()
 install_fhicl()

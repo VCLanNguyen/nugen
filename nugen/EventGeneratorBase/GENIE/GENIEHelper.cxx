@@ -182,7 +182,7 @@
   #define USE_IFDH_SERVICE 1
   // IFDHC
   #ifdef USE_IFDH_SERVICE
-    #include "IFDH_service.h"
+    #include "ifdh_art/IFDHService/IFDH_service.h"
   #else
     // bare IFDHC
     #include "ifdh.h"

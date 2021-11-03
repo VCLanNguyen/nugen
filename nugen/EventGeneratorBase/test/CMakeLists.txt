@@ -1,7 +1,7 @@
 
-art_make( EXCLUDE EventGeneratorTest_module.cc
+art_make( EXCLUDE EventGeneratorTest_module.cc ### MIGRATE-ACTION-RECOMMENDED: use art_make_library(), art_dictionary(), simple_plugin() with explicit source lists
           MODULE_LIBRARIES nusimdata::SimulationBase
-                           nugen_EventGeneratorBase_GENIE
+                           nugen::EventGeneratorBase_GENIE
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Framework_Services_Registry
 # for MixGenieEvents_module
@@ -12,21 +12,23 @@ art_make( EXCLUDE EventGeneratorTest_module.cc
 #                        art_root_io_tfile_support ROOT::Core
 # end-of-list for MixGenieEvents_module
                         messagefacility::MF_MessageLogger
-                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
-                        LOG4CPP
-                        XML2
-                        PYTHIA6
-                        LHAPDF
+                        log4cpp::log4cpp
+                        LibXml2::LibXml2
+                        Pythia6::Pythia6
+                        LHAPDF::LHAPDF
                         ${GENIE_LIB_LIST}
-                        CLHEP
-                        DK2NU_TREE
-                        ${ROOT_BASIC_LIB_LIST}
+                        GSL::gsl  # FWNUM relies on GSL
+                        BLAS::BLAS
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
+                        CLHEP::CLHEP
+                        dk2nu::Tree
+                        ROOT::Core
                         ROOT::EG
                         ROOT::TreePlayer
                         ROOT::FFTW
-                        ${ROOT_REFLEX}
                         ROOT::EGPythia6
                         ROOT::Gui
                         )

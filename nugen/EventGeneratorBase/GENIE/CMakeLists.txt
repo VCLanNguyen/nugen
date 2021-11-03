@@ -1,32 +1,32 @@
-set( IFDH_AS_SERVICE_LIB_LIST
-           art::Framework_Services_Registry
-           ${Boost_SYSTEM_LIBRARY}
-           IFDH_SERVICE )
 
-art_make( LIB_LIBRARIES nusimdata::SimulationBase
+art_make_library( LIBRARIES PRIVATE nusimdata::SimulationBase
                         art::Framework_Principal
                         art::Persistency_Provenance
                         art::Utilities
-                        ${IFDH_AS_SERVICE_LIB_LIST}
+                        art::Framework_Services_Registry
+                        ifdh_art::IFDH_service
                         canvas::canvas
                         messagefacility::MF_MessageLogger
-                        
                         fhiclcpp::fhiclcpp
                         cetlib::cetlib
                         cetlib_except::cetlib_except
-                        XML2
-                        LOG4CPP
-                        PYTHIA6
-                        LHAPDF
+                        LibXml2::LibXml2
+                        log4cpp::log4cpp
+                        Pythia6::Pythia6
+                        LHAPDF::LHAPDF
                         ${GENIE_LIB_LIST}
-                        DK2NU_TREE
-                        DK2NU_GENIE
-                        CLHEP
-                        IFDH
+                        GSL::gsl  # FWNUM relies on GSL
+                        BLAS::BLAS
+                        ROOT::EGPythia6
+                        ${ROOT_EVE_LIB_LIST}
+                        dk2nu::Tree
+                        dk2nu::Genie
+                        CLHEP::CLHEP
+                        ifdh::ifdh
                         ROOT::Geom
                         ROOT::GeomPainter
                         ROOT::MathMore
-                        ${ROOT_BASIC_LIB_LIST} )
+                        ROOT::Core )
 
 
 install_headers()

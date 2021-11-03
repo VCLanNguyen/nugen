@@ -1,11 +1,16 @@
-art_make(
-  LIB_LIBRARIES
-    LOG4CPP
-    XML2
-    PYTHIA6
-    LHAPDF
+
+art_make_library(
+  LIBRARIES PRIVATE
+    log4cpp::log4cpp
+    LibXml2::LibXml2
+    Pythia6::Pythia6
+    LHAPDF::LHAPDF
     ${GENIE_LIB_LIST}
-    ${ROOT_BASIC_LIB_LIST}
+    GSL::gsl  # FWNUM relies on GSL
+    BLAS::BLAS
+    ROOT::EGPythia6
+    ${ROOT_EVE_LIB_LIST}
+    ROOT::Core
 )
 
 install_headers()

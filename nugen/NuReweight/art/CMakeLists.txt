@@ -12,34 +12,37 @@ set( NURW_LIBS art::Framework_Services_Registry
                art::Utilities
                canvas::canvas
                messagefacility::MF_MessageLogger
-               
                fhiclcpp::fhiclcpp
                cetlib::cetlib
                cetlib_except::cetlib_except
-               nugen_EventGeneratorBase_GENIE
-               LOG4CPP
-               XML2
-               PYTHIA6
-               LHAPDF
+               nugen::EventGeneratorBase_GENIE
+               log4cpp::log4cpp
+               LibXml2::LibXml2
+               Pythia6::Pythia6
+               LHAPDF::LHAPDF
                ${GENIE_LIB_LIST}
-               ${ROOT_BASIC_LIB_LIST}
+               GSL::gsl  # FWNUM relies on GSL
+               BLAS::BLAS
+               ROOT::EGPythia6
+               ${ROOT_EVE_LIB_LIST}
+               ROOT::Core
                ROOT::EG
                ROOT::TreePlayer
                ROOT::FFTW
-               ${ROOT_REFLEX}
-               ROOT_EGPYTHIA6
+               ROOT::EGPythia6
                ROOT::Gui
            )
 
 art_make_library( SOURCE NuReweight.cxx
-                  LIBRARIES nusimdata::SimulationBase
-                            nugen_NuReweight
+                  LIBRARIES PRIVATE nusimdata::SimulationBase
+                            nugen::NuReweight
                             ${NURW_LIBS} )
 
-simple_plugin( ReweightAna module nugen_NuReweight_art
-                                  nugen_NuReweight
-                                  nusimdata::SimulationBase
-                                 ${NURW_LIBS} )
+cet_build_plugin( ReweightAna art::module
+                  LIBRARIES PRIVATE nugen::NuReweight_art
+                            nugen::NuReweight
+                            nusimdata::SimulationBase
+                            ${NURW_LIBS} )
 
 install_headers()
 install_fhicl()
