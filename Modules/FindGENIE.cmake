@@ -7,6 +7,17 @@ Finds GENIE and all its components
 
 
 #]================================================================]
+
+# this is the order that GENIE "recommends"
+# genie-config --libs
+#   -lGFwMsg -lGFwReg -lGFwAlg -lGFwInt -lGFwGHEP -lGFwNum -lGFwUtl -lGFwParDat
+#   -lGFwEG -lGFwNtp -lGPhXSIg -lGPhPDF -lGPhNuclSt -lGPhCmn -lGPhDcy -lGPhHadTransp
+#   -lGPhHadnz -lGPhDeEx -lGPhAMNGXS -lGPhAMNGEG -lGPhChmXS -lGPhCohXS -lGPhCohEG
+#   -lGPhDISXS -lGPhDISEG -lGPhDfrcXS -lGPhDfrcEG -lGPhGlwResXS -lGPhGlwResEG
+#   -lGPhIBDXS -lGPhIBDEG -lGPhMNucXS -lGPhMNucEG -lGPhMEL -lGPhNuElXS -lGPhNuElEG
+#   -lGPhQELXS -lGPhQELEG -lGPhResXS -lGPhResEG -lGPhStrXS
+#   -lGPhStrEG -lGPhNDcy -lGTlGeo -lGTlFlx -lGTlRew
+
 # headers
 find_file(_cet_Messenger_h NAMES Messenger.h HINTS ENV GENIE_INC
   PATH_SUFFIXES GENIE/Framework/Messenger)
