@@ -1,6 +1,7 @@
 
 art_make_library(
   LIBRARIES PRIVATE
+    nusimdata::SimulationBase
     log4cpp::log4cpp
     LibXml2::LibXml2
     Pythia6::Pythia6
