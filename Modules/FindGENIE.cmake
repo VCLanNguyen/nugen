@@ -56,6 +56,7 @@ if (GENIE_FOUND)
         set_target_properties(GENIE::${_glib} PROPERTIES
           INTERFACE_INCLUDE_DIRECTORIES "${GENIE_INCLUDE_DIRS}"
           IMPORTED_LOCATION "${${_glib}_LIBRARY}"
+          IMPORTED_NO_SONAME TRUE
           )
       endif()
       list(APPEND GENIE_LIB_LIST GENIE::${_glib})
