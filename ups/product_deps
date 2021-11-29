@@ -252,7 +252,7 @@ product		version		qual	flags		<table_format=2>
 art_root_io	v1_08_03	-
 dk2nugenie	v01_10_00d	-
 ifdh_art	v2_13_00	-
-nusimdata	v1_25_00	-
+nusimdata	v1_25_01	-
 cetmodules	v2_29_09	-	only_for_build
 end_product_list
 ####################################
