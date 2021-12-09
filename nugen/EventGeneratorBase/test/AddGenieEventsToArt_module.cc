@@ -342,7 +342,7 @@ evg::AddGenieEventsToArt::AddGenieEventsToArt(const Parameters& params)
   for (size_t i=0; i < fFileList.size(); ++i) {
     outFileList += "\n";
     outFileList += fFileList[i];
-    fGTreeChain->Add(fFileList[0].c_str());
+    fGTreeChain->Add(fFileList[i].c_str());
   }
   mf::LogInfo("AddGenieEventsToArt") << outFileList;
 
