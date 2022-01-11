@@ -16,13 +16,10 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
 
 find_package(cetmodules 2.29.06 REQUIRED)
-project(nugen VERSION 1.15.02 LANGUAGES CXX)
+project(nugen VERSION 1.15.03 LANGUAGES CXX)
 
 include(CetCMakeEnv)
 cet_cmake_env()
-
-# Find our own CMake modules, and tell everyone else where to find them.
-cet_cmake_module_directories(Modules)
 
 cet_set_compiler_flags(DIAGS CAUTIOUS WERROR
                        NO_UNDEFINED
@@ -58,7 +55,6 @@ include(BuildPlugins)
 # source
 add_subdirectory (nugen)
 add_subdirectory (tools)
-add_subdirectory (Modules)
 
 # ups - table and config files
 
