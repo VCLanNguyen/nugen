@@ -269,12 +269,12 @@ namespace evgb {
     , fGXMLPATH          (pset.get< std::string              >("GXMLPATH",           "") )
     , fGMSGLAYOUT        (pset.get< std::string              >("GMSGLAYOUT",         "") ) // [BASIC] or SIMPLE
     , fGENIEMsgThresholds(pset.get< std::string              >("GENIEMsgThresholds", "") ) // : separate list of files
-    , fGHepPrintLevel    (pset.get< int                      >("GHepPrintLevel",     -1) ) // see GHepRecord::SetPrintLevel() -1=no-print
+    , fGHepPrintLevel    (pset.get< int                      >("GHepPrintLevel",      0) ) // see GHepRecord::SetPrintLevel() -1=no-print
     , fMixerConfig       (pset.get< std::string              >("MixerConfig",    "none") )
     , fMixerBaseline     (pset.get< double                   >("MixerBaseline",      0.) )
     , fFiducialCut       (pset.get< std::string              >("FiducialCut",    "none") )
     , fGeomScan          (pset.get< std::string              >("GeomScan",    "default") )
-    , fDebugFlags        (pset.get< unsigned int             >("DebugFlags",          0) )
+    , fDebugFlags        (pset.get< unsigned int             >("DebugFlags",          1) )
   {
 
     // fEnvironment is (generally) deprecated ... print out any settings
@@ -453,7 +453,9 @@ namespace evgb {
     // how to distribute events in time
     if ( fSpillTimeConfig != "" ) {
       evgb::EvtTimeShiftFactory& timeShiftFactory = evgb::EvtTimeShiftFactory::Instance();
+      
       fTimeShifter = timeShiftFactory.GetEvtTimeShift(fSpillTimeConfig);
+
       if ( fTimeShifter ) {
         if ( ! fTimeShifter->IsRandomGeneratorSeeded() ) {
           mf::LogInfo("GENIEHelper")
@@ -1579,7 +1581,7 @@ namespace evgb {
     fHistEventsPerSpill = fHelperRandom->Poisson(fXSecMassPOT*fTotalHistFlux);
     return true;
   }
-
+  
   //--------------------------------------------------
   bool GENIEHelper::Sample(simb::MCTruth &truth, simb::MCFlux  &flux, simb::GTruth &gtruth)
   {
@@ -1614,6 +1616,39 @@ namespace evgb {
 
     // if no interaction generated return false
     if ( ! viableInteraction ) return false;
+    
+    //==========================================================================/
+    //This block was coded at a later stage, commented out below
+    // fGenieEventReocrd overwrites the neutrino vertex
+    // so need to update the flux.dk2gen and flux.gen2vtx
+    // would probably best to update this flux information before filling the MCTruth 
+    // so can pass the distance info when filling MCTruth  
+    
+    TLorentzVector *vertex = fGenieEventRecord->Vertex();
+    TLorentzVector nuray_pos = fFluxD->Position();
+    TVector3 ray2vtx = nuray_pos.Vect() - vertex->Vect();
+    flux.fgenx    = nuray_pos.X();
+    flux.fgeny    = nuray_pos.Y();
+    flux.fgenz    = nuray_pos.Z();
+    flux.fgen2vtx = ray2vtx.Mag();
+
+    genie::flux::GFluxBlender* blender =
+      dynamic_cast<genie::flux::GFluxBlender*>(fFluxD2GMCJD);
+    if ( blender ) {
+      flux.fdk2gen = blender->TravelDist();
+      // / if mixing flavors print the state of the blender
+      if ( fDebugFlags & 0x02 ) blender->PrintState();
+    }
+
+    if ( fDebugFlags & 0x04 ) {
+      mf::LogInfo("GENIEHelper") << "vertex loc " << vertex->X() << ","
+                                 << vertex->Y() << "," << vertex->Z() << std::endl
+                                 << " flux ray start " << nuray_pos.X() << ","
+                                 << nuray_pos.Y() << "," << nuray_pos.Z() << std::endl
+                                 << " ray2vtx = " << flux.fgen2vtx
+                                 << " dk2ray = " << flux.fdk2gen;
+    }
+    //==========================================================================/
 
     // fill the MCTruth & GTruth information as we have a good interaction
     // these two objects are enough to reconstruct the GENIE record
@@ -1621,14 +1656,16 @@ namespace evgb {
 
     // choose a time within the spill (ns) to shift the vertex times by:
     double timeoffset = 0;
+    
     if ( ! fTimeShifter ) {
       timeoffset = fHelperRandom->Uniform()*fRandomTimeOffset;
     } else {
       timeoffset = fTimeShifter->TimeOffset();
+    //  timeoffset = fTimeShifter->TimeOffset(flux);
     }
     // mf::LogInfo("GENIEHelper") << "TimeShifter adding " << timeoffset;
     double spilltime  = fGlobalTimeOffset + timeoffset;
-
+  
     evgb::FillMCTruth(fGenieEventRecord, spilltime, truth,
                       __GENIE_RELEASE__, fTuneName, fAddGenieVtxTime );
     evgb::FillGTruth(fGenieEventRecord, gtruth);
@@ -1681,33 +1718,32 @@ namespace evgb {
       flux.fFluxType = simb::kHistPlusFocus;
     }
 
-
-    // fill these after the Pack[NuMI|Simple]Flux because those
-    // will Reset() the values at the start
-    TLorentzVector *vertex = fGenieEventRecord->Vertex();
-    TLorentzVector nuray_pos = fFluxD->Position();
-    TVector3 ray2vtx = nuray_pos.Vect() - vertex->Vect();
-    flux.fgenx    = nuray_pos.X();
-    flux.fgeny    = nuray_pos.Y();
-    flux.fgenz    = nuray_pos.Z();
-    flux.fgen2vtx = ray2vtx.Mag();
-
-    genie::flux::GFluxBlender* blender =
-      dynamic_cast<genie::flux::GFluxBlender*>(fFluxD2GMCJD);
-    if ( blender ) {
-      flux.fdk2gen = blender->TravelDist();
-      // / if mixing flavors print the state of the blender
-      if ( fDebugFlags & 0x02 ) blender->PrintState();
-    }
-
-    if ( fDebugFlags & 0x04 ) {
-      mf::LogInfo("GENIEHelper") << "vertex loc " << vertex->X() << ","
-                                 << vertex->Y() << "," << vertex->Z() << std::endl
-                                 << " flux ray start " << nuray_pos.X() << ","
-                                 << nuray_pos.Y() << "," << nuray_pos.Z() << std::endl
-                                 << " ray2vtx = " << flux.fgen2vtx
-                                 << " dk2ray = " << flux.fdk2gen;
-    }
+//    // fill these after the Pack[NuMI|Simple]Flux because those
+//    // will Reset() the values at the start
+//    TLorentzVector *vertex = fGenieEventRecord->Vertex();
+//    TLorentzVector nuray_pos = fFluxD->Position();
+//    TVector3 ray2vtx = nuray_pos.Vect() - vertex->Vect();
+//    flux.fgenx    = nuray_pos.X();
+//    flux.fgeny    = nuray_pos.Y();
+//    flux.fgenz    = nuray_pos.Z();
+//    flux.fgen2vtx = ray2vtx.Mag();
+//
+//    genie::flux::GFluxBlender* blender =
+//      dynamic_cast<genie::flux::GFluxBlender*>(fFluxD2GMCJD);
+//    if ( blender ) {
+//      flux.fdk2gen = blender->TravelDist();
+//      // / if mixing flavors print the state of the blender
+//      if ( fDebugFlags & 0x02 ) blender->PrintState();
+//    }
+//
+//    if ( fDebugFlags & 0x04 ) {
+//      mf::LogInfo("GENIEHelper") << "vertex loc " << vertex->X() << ","
+//                                 << vertex->Y() << "," << vertex->Z() << std::endl
+//                                 << " flux ray start " << nuray_pos.X() << ","
+//                                 << nuray_pos.Y() << "," << nuray_pos.Z() << std::endl
+//                                 << " ray2vtx = " << flux.fgen2vtx
+//                                 << " dk2ray = " << flux.fdk2gen;
+//    }
     if ( fGHepPrintLevel >= 0 ) {
       std::cout << *fGenieEventRecord;
     }

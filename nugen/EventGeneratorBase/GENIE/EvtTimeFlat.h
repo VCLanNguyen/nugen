@@ -40,6 +40,7 @@ namespace evgb {
     /// that vary on a record-by-record basis
     virtual double    TimeOffset();
     virtual double    TimeOffset(std::vector<double> v);
+    virtual double    TimeOffset(simb::MCFlux &flux);
 
     /// provide a means of printing the configuration
     virtual void     PrintConfig(bool verbose=true);

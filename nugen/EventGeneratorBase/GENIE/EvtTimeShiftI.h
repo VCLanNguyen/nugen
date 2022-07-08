@@ -24,6 +24,9 @@
 #include <vector>
 #include "TRandom.h"  // ROOT's random # base class
 
+// nusimdata includes
+#include "nusimdata/SimulationBase/MCFlux.h"
+
 namespace evgb {
 
   class EvtTimeShiftI {
@@ -49,6 +52,7 @@ namespace evgb {
     /// that vary on a record-by-record basis
     virtual double    TimeOffset() = 0;
     virtual double    TimeOffset(std::vector<double> v) = 0;
+    virtual double    TimeOffset(simb::MCFlux &flux) = 0;
 
     /// provide a means of printing the configuration
     virtual void     PrintConfig(bool verbose=true) = 0;

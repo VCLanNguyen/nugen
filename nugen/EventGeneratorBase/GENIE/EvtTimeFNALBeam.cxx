@@ -40,6 +40,9 @@ TIMESHIFTREG3(evgb,EvtTimeFNALBeam,evgb::EvtTimeFNALBeam)
 #include <iomanip>
 #include <algorithm>
 
+//ROOT includes
+#include "TVector3.h"
+
 //GENIE includes
 #ifdef GENIE_PRE_R3
   #include "GENIE/Utils/StringUtils.h"
@@ -204,6 +207,71 @@ namespace evgb {
   {
     CalculateCPDF(bi);
     return TimeOffset();
+  }
+
+  double EvtTimeFNALBeam::TimeOffset(simb::MCFlux &flux)
+  {
+    //Calculate Spill Time + ToF of the hadron + neutrino
+    //In this scenario: we assume T0 of the event is the time at which the spill starts 
+    
+    //TODO: Do we want to subtract the time of first neutrino arrival = 110m / c 
+    //i.e. the T0 of the event = arrival time of the first neutrino?
+
+    //Get the mass of the hadron using the pdg of the hadron
+    //Hardcoded using the ntuples structure: http://www.hep.utexas.edu/~zarko/wwwgnumi/v19/
+    //TODO: Don't like hardcoded stuff so is there a way around this?
+    double m(0);
+    switch (flux.fptype) {
+      case 130: //K0L
+        m = 0.497611; // GeV https://pdg.lbl.gov/2020/listings/rpp2020-list-K-zero.pdf
+        break;
+      case 321:  //K+
+      case -321: //K-
+        m = 0.493677; // GeV https://pdg.lbl.gov/2020/listings/rpp2020-list-K-plus-minus.pdf
+        break;
+      case 13:  //mu-
+      case -13: //mu+
+        m = 0.1056583745; // GeV https://pdg.lbl.gov/2020/listings/rpp2020-list-muon.pdf
+        break;
+      case 211: //pi+
+      case -211://pi-
+        m = 0.13957039; // GeV https://pdg.lbl.gov/2020/tables/rpp2020-tab-mesons-light.pdf
+        break;
+    }
+  
+    //Calculate the momentum and velocity of the hadron p = sqrt(px*px + py*py +pz*pz)
+    //The calculation here is based on here pppx,pppy,pppz of gsimple
+    double apppz = flux.fpppz > 1.0e-30 ? flux.fpppz : 1.0e-30;
+    double p = sqrt ( (flux.fppdxdz*apppz)*(flux.fppdxdz*apppz)
+                    + (flux.fppdxdz*apppz)*(flux.fppdxdz*apppz)
+                    + flux.fpppz*flux.fpppz ); 
+    double c(299792458); // m/s https://physics.nist.gov/cgi-bin/cuu/Value?c
+    double v = sqrt( (p/m)*(p/m) / ( 1 + (p/m)*(p/m) ) ) * c; // m/s
+    //Calculate hadron ToF
+    double d = TVector3(flux.fvx, flux.fvy, flux.fvz).Mag()/100; //cm -> m  
+    double hadronToF = d / v * 1.0e9; //s -> ns
+
+    //Calculate nu ToF
+    double nuToF =  (flux.fdk2gen + flux.fgen2vtx) / c * 1.0e9; //s -> ns
+
+//    std::cout.precision(9);
+//    std::cout << "-------------------------------------" << std::endl; 
+//    std::cout << "hadron pdg: " << flux.fptype << std::endl;
+//    std::cout << "hadron mass: " << m << std::endl;
+//    std::cout << "hadron momentum: " << p << std::endl;
+//    std::cout << "hadron velocity: " << v << std::endl;
+//    std::cout << "-------------------------------------" << std::endl; 
+//    std::cout << "hadron dist: " << d << std::endl;
+//    std::cout << "hadron ToF: " << hadronToF << std::endl;
+//    std::cout << "-------------------------------------" << std::endl; 
+//    std::cout << "nu dist: " << flux.fdk2gen + flux.fgen2vtx << std::endl;
+//    std::cout << "nu ToF: " << nuToF << std::endl;
+//    std::cout << "-------------------------------------" << std::endl; 
+//    std::cout << "Total Dist : " << d + flux.fdk2gen + flux.fgen2vtx << std::endl; 
+//    std::cout << "Total ToF : " << hadronToF+nuToF << std::endl; 
+//    std::cout << "-------------------------------------" << std::endl; 
+
+    return TimeOffset() + hadronToF + nuToF;
   }
 
   void EvtTimeFNALBeam::PrintConfig(bool /* verbose */)

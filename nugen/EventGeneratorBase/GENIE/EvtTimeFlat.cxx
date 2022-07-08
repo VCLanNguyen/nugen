@@ -48,6 +48,12 @@ namespace evgb {
     // flat ... doesn't need additional parameter so ignore them
     return TimeOffset();
   }
+  
+  double EvtTimeFlat::TimeOffset(simb::MCFlux &flux)
+  {
+    // dummy function. TimeOffset account for ToF is coded in EvtTimeFNALBeam
+    return TimeOffset();
+  }
 
   void EvtTimeFlat::PrintConfig(bool /* verbose */)
   {

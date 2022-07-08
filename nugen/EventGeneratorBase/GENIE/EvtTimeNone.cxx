@@ -37,6 +37,12 @@ namespace evgb {
     return TimeOffset();
   }
 
+  double EvtTimeNone::TimeOffset(simb::MCFlux &flux)
+  {
+    return TimeOffset();
+  }
+
+
   void EvtTimeNone::PrintConfig(bool /* verbose */)
   {
   }
