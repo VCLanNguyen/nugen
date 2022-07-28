@@ -1660,8 +1660,8 @@ namespace evgb {
     if ( ! fTimeShifter ) {
       timeoffset = fHelperRandom->Uniform()*fRandomTimeOffset;
     } else {
-      timeoffset = fTimeShifter->TimeOffset();
-    //  timeoffset = fTimeShifter->TimeOffset(flux);
+    //  timeoffset = fTimeShifter->TimeOffset();
+      timeoffset = fTimeShifter->TimeOffset(flux);
     }
     // mf::LogInfo("GENIEHelper") << "TimeShifter adding " << timeoffset;
     double spilltime  = fGlobalTimeOffset + timeoffset;

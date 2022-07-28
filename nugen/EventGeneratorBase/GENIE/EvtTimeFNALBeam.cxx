@@ -239,37 +239,44 @@ namespace evgb {
         break;
     }
   
-    //Calculate the momentum and velocity of the hadron p = sqrt(px*px + py*py +pz*pz)
-    //The calculation here is based on here pppx,pppy,pppz of gsimple
+    //Calculate the velocity of the hadron from production momentum p = sqrt(px*px + py*py +pz*pz)
+    //gsimple pppx, pppy, pppz = hadron momentum at production
     double apppz = flux.fpppz > 1.0e-30 ? flux.fpppz : 1.0e-30;
     double p = sqrt ( (flux.fppdxdz*apppz)*(flux.fppdxdz*apppz)
                     + (flux.fppdxdz*apppz)*(flux.fppdxdz*apppz)
                     + flux.fpppz*flux.fpppz ); 
-    double c(299792458); // m/s https://physics.nist.gov/cgi-bin/cuu/Value?c
-    double v = sqrt( (p/m)*(p/m) / ( 1 + (p/m)*(p/m) ) ) * c; // m/s
+    
+    double c_m_per_ns(0.299792458); // m / ns https://pdg.lbl.gov/2020/reviews/rpp2020-rev-phys-constants.pdf
+    double v = sqrt( (p/m)*(p/m) / ( 1 + (p/m)*(p/m) ) ) * c_m_per_ns; // m/ns
+    
+    //Calculate the hadron distance from 0,0,0 to postion hadron decay in beam coordinate
+    //gsimple fvx, fvy, fvz = vertex of hadron decay
+    double d = TVector3(flux.fvx, flux.fvy, flux.fvz).Mag() / 100; //cm -> m  
     //Calculate hadron ToF
-    double d = TVector3(flux.fvx, flux.fvy, flux.fvz).Mag()/100; //cm -> m  
-    double hadronToF = d / v * 1.0e9; //s -> ns
+    double hadronToF = d / v; 
 
     //Calculate nu ToF
-    double nuToF =  (flux.fdk2gen + flux.fgen2vtx) / c * 1.0e9; //s -> ns
+    // dk2gen = hadron decay to ray position (ray position = neutrino position that crosses the gsimple window)
+    // gen2vtx = ray position to vertex position 
+    double nuToF =  (flux.fdk2gen + flux.fgen2vtx) / c_m_per_ns;
 
-//    std::cout.precision(9);
-//    std::cout << "-------------------------------------" << std::endl; 
-//    std::cout << "hadron pdg: " << flux.fptype << std::endl;
-//    std::cout << "hadron mass: " << m << std::endl;
-//    std::cout << "hadron momentum: " << p << std::endl;
-//    std::cout << "hadron velocity: " << v << std::endl;
-//    std::cout << "-------------------------------------" << std::endl; 
-//    std::cout << "hadron dist: " << d << std::endl;
-//    std::cout << "hadron ToF: " << hadronToF << std::endl;
-//    std::cout << "-------------------------------------" << std::endl; 
-//    std::cout << "nu dist: " << flux.fdk2gen + flux.fgen2vtx << std::endl;
-//    std::cout << "nu ToF: " << nuToF << std::endl;
-//    std::cout << "-------------------------------------" << std::endl; 
-//    std::cout << "Total Dist : " << d + flux.fdk2gen + flux.fgen2vtx << std::endl; 
-//    std::cout << "Total ToF : " << hadronToF+nuToF << std::endl; 
-//    std::cout << "-------------------------------------" << std::endl; 
+    std::cout.precision(9);
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "hadron production location: " << flux.fppvx << " " << flux.fppvy << " " << flux.fppvz << std::endl; 
+    std::cout << "hadron pdg: " << flux.fptype << std::endl;
+    std::cout << "hadron mass: " << m << std::endl;
+    std::cout << "hadron momentum: " << p << std::endl;
+    std::cout << "hadron velocity: " << v << std::endl;
+    std::cout << "-------------------------------------" << std::endl; 
+    std::cout << "hadron dist: " << d << std::endl;
+    std::cout << "hadron ToF: " << hadronToF << std::endl;
+    std::cout << "-------------------------------------" << std::endl; 
+    std::cout << "nu dist: " << flux.fdk2gen + flux.fgen2vtx << std::endl;
+    std::cout << "nu ToF: " << nuToF << std::endl;
+    std::cout << "-------------------------------------" << std::endl; 
+    std::cout << "Total Dist : " << d + flux.fdk2gen + flux.fgen2vtx << std::endl; 
+    std::cout << "Total ToF : " << hadronToF+nuToF << std::endl; 
+    std::cout << "-------------------------------------" << std::endl; 
 
     return TimeOffset() + hadronToF + nuToF;
   }
